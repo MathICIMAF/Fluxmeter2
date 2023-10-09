@@ -7,11 +7,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.iimas.fluxmeter2.TimeView
-        android:id="@+id/time_view"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
 
     <com.iimas.fluxmeter2.FrequencyView
         android:layout_width="match_parent"

@@ -108,8 +108,8 @@ public class FrequencyView extends View {
         else if (colorScale.equals("Ice"))      colors = colorIce;
         else if (colorScale.equals("Rainbow"))  colors = colorRainbow;
 
-        int wColor = 50;
-        int wFrequency = 50;
+        int wColor = 10;
+        int wFrequency = 40;
         int rWidth = width-wColor-wFrequency;
         paint.setStrokeWidth(2);
         

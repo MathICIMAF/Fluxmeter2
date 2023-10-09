@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     private FrequencyView frequencyView;
 
-    private TimeView timeView;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -42,9 +41,6 @@ public class MainActivity extends AppCompatActivity {
         frequencyView.setFFTResolution(fftResolution);
         frequencyView.setSamplingRate(samplingRate);
         frequencyView.setBackgroundColor(Color.BLACK);
-        timeView = findViewById(R.id.time_view);
-        timeView.setFFTResolution(fftResolution);
-        timeView.setBackgroundColor(Color.BLACK);
 
 
     }
@@ -137,10 +133,8 @@ public class MainActivity extends AppCompatActivity {
         FrequencyScanner frequencyScanner = new FrequencyScanner();
         mags =  frequencyScanner.extractFrequencies(fftBuffer);
         frequencyView.setMagnitudes(mags);
-        timeView.setWave(mags);
         runOnUiThread(() -> {
             frequencyView.invalidate();
-            timeView.invalidate();
         });
     }
 
