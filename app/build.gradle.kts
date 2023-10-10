@@ -37,4 +37,5 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation ("com.github.wendykierp:JTransforms:3.1")
+    implementation ("com.saadahmedev.popup-dialog:popup-dialog:1.0.5")
 }

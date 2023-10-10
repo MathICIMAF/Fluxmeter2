@@ -41,19 +41,32 @@ public class FrequencyView extends View {
     private int pos;
     private int samplingRate;
     private int width, height;
+
+    private int bandHorizontal = 20;
     private double[] magnitudes;
 
-    private float maxMagnitud = 10000;
+    float factor = 4.0f;
 
-    float umbral = 0.2f;
+    private float maxMagnitud = 15000;
+
+    float umbral = 0.3f;
+
 
     private float scale = 1.2f;
 
-    private int[] colorRainbow = new int[] {    0xFFFFFFFF, 0xFFFF00FF, 0xFFFF0000, 0xFFFFFF00, 0xFF00FF00, 0xFF00FFFF, 0xFF0000FF, 0xFF000000 };
+    private int[] colorRainbow = new int[] {  0xFF000000,0xFF0000FF , 0xFF00FFFF,0xFF00FF00,0xFFFFFF00,0xFFFF0000,  0xFFFF00FF,   0xFFFFFFFF  };
     private int[] colorFire = new int[] {    0xFFFFFFFF, 0xFFFFFF00, 0xFFFF0000, 0xFF000000 };
     private int[] colorIce = new int[] {    0xFFFFFFFF, 0xFF00FFFF, 0xFF0000FF, 0xFF000000 };
     private int[] colorGrey = new int[] {    0xFF000000,0xFFFFFFFF };
-    
+
+    public float getUmbral(){
+        return umbral;
+    }
+
+    public void setUmbral(float value){
+        umbral = value;
+    }
+
     // Window
     float minX, minY, maxX, maxY;
     public FrequencyView(Context context) {
@@ -71,7 +84,7 @@ public class FrequencyView extends View {
         width = w;
         height = h;
         if (bitmap!=null)    bitmap.recycle();
-        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        bitmap = Bitmap.createBitmap(width, h, Bitmap.Config.ARGB_8888);
         canvas = new Canvas(bitmap);
     }
     @SuppressLint("ClickableViewAccessibility")
@@ -126,9 +139,16 @@ public class FrequencyView extends View {
         for (int k = 0; k < band; k++) {
             for (int i = 0; i < height; i++) {
                 float j = getValueFromRelativePosition((float) (height - i) / height, 1, samplingRate, logFrequency);
-                j /= samplingRate;
-                float mag = (float) magnitudes[(int) (j * magnitudes.length / 2)];
-                //float db = (float) Math.max(0,-20*Math.log10(mag));
+                j /= (samplingRate);
+                int posMagnitudes = (int) (j * (magnitudes.length-1));
+
+                //Rampa de compensacion
+                float weight = posMagnitudes/factor;
+                if (weight > 4.0f)
+                    weight = 4.0f;
+                float mag = (float) magnitudes[posMagnitudes]*weight;
+                //*********************
+
                 int c = getInterpolatedColor(colors, mag / maxMagnitud);
                 paint.setColor(c);
                 int x = (pos % rWidth+k);
@@ -172,7 +192,7 @@ public class FrequencyView extends View {
     		}
         } else {
 	        for (int i=0; i<(samplingRate-500); i+=1000)
-	            canvas.drawText(" "+i/1000, rWidth + wColor, height*(1f-(float) i/(samplingRate/4)), paint);
+	            canvas.drawText(" "+i/1000, rWidth + wColor, height*(1f-(float) i/(samplingRate/2)), paint);
         }
         
         pos+=band;

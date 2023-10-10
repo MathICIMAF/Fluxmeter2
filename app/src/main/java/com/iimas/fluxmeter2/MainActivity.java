@@ -1,22 +1,34 @@
 package com.iimas.fluxmeter2;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+import com.saadahmedsoft.popupdialog.PopupDialog;
+import com.saadahmedsoft.popupdialog.Styles;
+import com.saadahmedsoft.popupdialog.listener.OnDialogButtonClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static int samplingRate = 22050;
+    public static int frecuencySampling = 22050;
     public static ContinuousRecord recorder;
-    public int fftResolution = 256;
+    public int windowSize = 256;  // fft Resolution o la N
+
+    private int max_freq_graficar = 7000;
 
     // Buffers
     private List<short[]> bufferStack; // Store trunks of buffers
@@ -28,19 +40,51 @@ public class MainActivity extends AppCompatActivity {
 
     private FrequencyView frequencyView;
 
+    private SeekBar seekBar;
+    private TextView umbralText,fmText,fftText;
+
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recorder = new ContinuousRecord(samplingRate);
+        recorder = new ContinuousRecord(frecuencySampling);
 
         frequencyView = findViewById(R.id.frequency_view);
+        seekBar = findViewById(R.id.seek_umbral);
+        umbralText = findViewById(R.id.umbral_text);
+        fmText = findViewById(R.id.fmText);
+        fftText = findViewById(R.id.fftText);
 
-        frequencyView.setFFTResolution(fftResolution);
-        frequencyView.setSamplingRate(samplingRate);
+        fmText.setText("FM: "+frecuencySampling+ "Hz" );
+        fftText.setText("Ventana: "+windowSize);
+
+        frequencyView.setFFTResolution(windowSize);
+        frequencyView.setSamplingRate(frecuencySampling);
         frequencyView.setBackgroundColor(Color.BLACK);
+
+        seekBar.setProgress((int)(frequencyView.getUmbral()*100));
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                float umbral = i/100.0f;
+                umbralText.setText("Umbral: "+umbral);
+                frequencyView.setUmbral(umbral);
+                frequencyView.invalidate();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
 
     }
@@ -87,10 +131,10 @@ public class MainActivity extends AppCompatActivity {
         recorder.release();
 
         // Prepare recorder
-        recorder.prepare(fftResolution); // Record buffer size if forced to be a multiple of the fft resolution
+        recorder.prepare(windowSize); // Record buffer size if forced to be a multiple of the fft resolution
 
         // Build buffers for runtime
-        int n = fftResolution;
+        int n = windowSize;
         fftBuffer = new short[n];
         re = new float[n];
         im = new float[n];
@@ -108,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getTrunks(short[] recordBuffer) {
-        int n = fftResolution;
+        int n = windowSize;
 
         // Trunks are consecutive n/2 length samples
         for (int i=0; i<bufferStack.size()-1; i++)
@@ -127,6 +171,47 @@ public class MainActivity extends AppCompatActivity {
         short[] first = bufferStack.get(0);
         short[] last = bufferStack.get(bufferStack.size()-1);
         System.arraycopy(last, 0, first, 0, n/2);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_about){
+            showAbout();
+        }
+        if (itemId == R.id.action_play){
+            startRecording();
+        }
+        if (itemId == R.id.action_pause){
+            stopRecording();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    void showAbout(){
+        PopupDialog.getInstance(this)
+                .setStyle(Styles.STANDARD)
+                .setHeading(getString(R.string.about))
+                .setDescription(getString(R.string.about_description))
+                .setPopupDialogIcon(R.drawable.baseline_info_24)
+                .setPopupDialogIconTint(R.color.colorPrimary)
+                .setPositiveButtonText("OK")
+                .setCancelable(false)
+                .showDialog(new OnDialogButtonClickListener() {
+                    @Override
+                    public void onPositiveClicked(Dialog dialog) {
+                        super.onPositiveClicked(dialog);
+                    }
+                });
     }
 
     void process(){

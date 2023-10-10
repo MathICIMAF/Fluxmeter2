@@ -4,16 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
+    android:weightSum="1"
     tools:context=".MainActivity">
 
 
     <com.iimas.fluxmeter2.FrequencyView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.8"
         android:id="@+id/frequency_view">
 
     </com.iimas.fluxmeter2.FrequencyView>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.2"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:id="@+id/fmText"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:id="@+id/fftText"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:text="Umbral: 0.3"
+            android:id="@+id/umbral_text">
+
+        </TextView>
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:max="100"
+            android:id="@+id/seek_umbral">
+        </SeekBar>
+
+    </LinearLayout>
+
+
 
 </LinearLayout>
