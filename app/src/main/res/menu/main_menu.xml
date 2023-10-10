@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	  xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+<item android:id="@+id/action_settings"
+      android:title="@string/settings"
+      app:showAsAction="never" />
+
+<item android:id="@+id/action_about"
+		android:title="@string/about"
+		app:showAsAction="never" />
+
+<item android:id="@+id/action_play"
+	android:title="Play"
+	android:icon="@drawable/baseline_play_arrow_24"
+	app:showAsAction="always"></item>
+
+	<item android:id="@+id/action_pause"
+		android:title="Pause"
+		android:icon="@drawable/baseline_pause_24"
+		app:showAsAction="always"></item>
+
+
+</menu>
