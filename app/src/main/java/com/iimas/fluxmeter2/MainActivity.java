@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     public static ContinuousRecord recorder;
     public int windowSize = 256;  // fft Resolution o la N
 
-    private int max_freq_graficar = 7000;
 
     // Buffers
     private List<short[]> bufferStack; // Store trunks of buffers
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         fmText = findViewById(R.id.fmText);
         fftText = findViewById(R.id.fftText);
 
-        fmText.setText("FM: "+frecuencySampling+ "Hz" );
+        fmText.setText("Fm: "+frecuencySampling+ "Hz" );
         fftText.setText("Ventana: "+windowSize);
 
         frequencyView.setFFTResolution(windowSize);
@@ -146,9 +145,7 @@ public class MainActivity extends AppCompatActivity {
         // Start recording
         startRecording();
 
-        // Log
-        //Log.d("recorder.getBufferLength()", recorder.getBufferLength()+" samples");
-        //Log.d("bufferStack.size()", bufferStack.size()+" trunks");
+
     }
 
     private void getTrunks(short[] recordBuffer) {

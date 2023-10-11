@@ -94,7 +94,6 @@ public class ContinuousRecord {
 				   }
 			   });
 	       	thread.start();
-			//Log.d("ContinuousRecord","Service started");
 		}
 	}
 	

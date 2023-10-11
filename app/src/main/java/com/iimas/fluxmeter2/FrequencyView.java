@@ -127,8 +127,8 @@ public class FrequencyView extends View {
         paint.setStrokeWidth(2);
         
         // Get scale preferences
-		String defFrequency = "Linear";//getString(R.string.preferences_frequency_scale_default_value);
-    	boolean logFrequency = false;//!Misc.getPreference("frequency_scale", defFrequency).equals(defFrequency);
+		//String defFrequency = "Linear";//getString(R.string.preferences_frequency_scale_default_value);
+    	//boolean logFrequency = false;//!Misc.getPreference("frequency_scale", defFrequency).equals(defFrequency);
         
         // Update buffer bitmap
         paint.setColor(Color.BLACK);
@@ -138,7 +138,7 @@ public class FrequencyView extends View {
 
         for (int k = 0; k < band; k++) {
             for (int i = 0; i < height; i++) {
-                float j = getValueFromRelativePosition((float) (height - i) / height, 1, samplingRate, logFrequency);
+                float j = getValueFromRelativePosition((float) (height - i) / height, 1, samplingRate, false);
                 j /= (samplingRate);
                 int posMagnitudes = (int) (j * (magnitudes.length-1));
 
@@ -155,7 +155,6 @@ public class FrequencyView extends View {
                 int y = i;
                 this.canvas.drawPoint(x, y, paint);
                 this.canvas.drawPoint(x, y, paint); // make color brighter
-                //this.canvas.drawPoint(pos%rWidth, height-i, paint); // make color even brighter
 
             }
         }
@@ -185,16 +184,10 @@ public class FrequencyView extends View {
         canvas.drawRect(rWidth + wColor, 0, width, height, paint);
         paint.setColor(Color.WHITE);
         canvas.drawText("kHz", rWidth + wColor, 12*ratio, paint);
-        if (logFrequency) {
-        	for (int i=1; i<5; i++) {
-	    		float y = getRelativePosition((float) Math.pow(10,i), 1, samplingRate, logFrequency);
-	    		canvas.drawText("1e"+i, rWidth + wColor, (1f-y)*height, paint);
-    		}
-        } else {
-	        for (int i=0; i<(samplingRate-500); i+=1000)
-	            canvas.drawText(" "+i/1000, rWidth + wColor, height*(1f-(float) i/(samplingRate/2)), paint);
-        }
-        
+
+        for (int i=0; i<(samplingRate-500); i+=1000)
+	        canvas.drawText(" "+i/1000, rWidth + wColor, height*(1f-(float) i/(samplingRate/2)), paint);
+
         pos+=band;
     }
 
@@ -225,9 +218,15 @@ public class FrequencyView extends View {
     }
     public int getInterpolatedColor(int[] colors, float unit) {
         if (unit <= umbral) return colors[0];
-        if (unit >= 1) return colors[colors.length - 1];
+        if (unit >= 1.0f) return colors[colors.length - 1];
+
+
+        float unit_aux = unit;
+
+        unit_aux *= (1.0-umbral);
         
-        float p = unit * (colors.length - 1);
+        float p = unit_aux * (colors.length - 1);
+
         int i = (int) p;
         p -= i;
 
