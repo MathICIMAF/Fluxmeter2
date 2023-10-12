@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -42,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private TextView umbralText,fmText,fftText;
 
+    private CheckBox showFeqMCheck;
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         umbralText = findViewById(R.id.umbral_text);
         fmText = findViewById(R.id.fmText);
         fftText = findViewById(R.id.fftText);
+        showFeqMCheck = findViewById(R.id.fmediaCheck);
 
         fmText.setText("Fm: "+frecuencySampling+ "Hz" );
         fftText.setText("Ventana: "+windowSize);
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         frequencyView.setFFTResolution(windowSize);
         frequencyView.setSamplingRate(frecuencySampling);
         frequencyView.setBackgroundColor(Color.BLACK);
+        frequencyView.setFmList();
 
         seekBar.setProgress((int)(frequencyView.getUmbral()*100));
 
@@ -85,6 +91,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        showFeqMCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                showFreqM(b);
+            }
+        });
 
     }
 
@@ -213,11 +225,25 @@ public class MainActivity extends AppCompatActivity {
 
     void process(){
         FrequencyScanner frequencyScanner = new FrequencyScanner();
-        mags =  frequencyScanner.extractFrequencies(fftBuffer);
-        frequencyView.setMagnitudes(mags);
+        if (frequencyView.getShowFreqM()){
+            double freqM = frequencyScanner.extractFreqMean(fftBuffer);
+            frequencyView.setFreqM(freqM);
+        }
+        else {
+            mags =  frequencyScanner.extractFrequencies(fftBuffer);
+            frequencyView.setMagnitudes(mags);
+        }
         runOnUiThread(() -> {
             frequencyView.invalidate();
         });
+    }
+
+    void showFreqM(boolean b){
+        frequencyView.setShowFreqM(b);
+        frequencyView.setFFTResolution(windowSize);
+        frequencyView.setSamplingRate(frecuencySampling);
+        frequencyView.setFmList();
+        loadEngine();
     }
 
 }

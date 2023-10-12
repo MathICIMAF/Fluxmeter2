@@ -49,10 +49,17 @@
 
         <SeekBar
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="50dp"
             android:max="100"
             android:id="@+id/seek_umbral">
         </SeekBar>
+
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fmediaCheck"
+            android:text="Frecuencia media"
+            />
 
     </LinearLayout>
 

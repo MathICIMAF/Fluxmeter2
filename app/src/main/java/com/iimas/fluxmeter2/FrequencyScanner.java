@@ -50,11 +50,7 @@ public class FrequencyScanner {
         fft.realForward(a);
 
         double [] res = new double[sampleData.length];
-        int first = 0;
-        for (int i = 0; i < first; i++){
-            res[i] = 0;
-        }
-        for(int i = first; i < a.length / 2; ++i) {
+        for(int i = 0; i < a.length / 2; ++i) {
             double re  = a[2*i];
             double im  = a[2*i+1];
             double mag = Math.sqrt(re * re + im * im);
@@ -62,6 +58,29 @@ public class FrequencyScanner {
         }
 
         return res;
+    }
+
+    public double extractFreqMean(short[] sampleData){
+        double res = 0;
+        DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
+        double[] a = new double[(sampleData.length + sampleData.length)];
+
+        System.arraycopy(applyWindow(sampleData), 0, a, 0, sampleData.length);
+        fft.realForward(a);
+
+        double sum_pi = 0;
+        double sum_i_pi = 0;
+
+        for(int i = 0; i < a.length / 2; ++i) {
+            double re  = a[2*i];
+            double im  = a[2*i+1];
+            double mag = Math.sqrt(re * re + im * im);
+            sum_pi+=mag;
+            sum_i_pi+=(i*mag);
+
+        }
+
+        return sum_i_pi/sum_pi;
     }
 
     /** build a Hamming window filter for samples of a given size

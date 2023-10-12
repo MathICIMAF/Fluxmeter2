@@ -26,6 +26,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class associated with the spectrogram view
  * Handles events:
@@ -42,8 +45,14 @@ public class FrequencyView extends View {
     private int samplingRate;
     private int width, height;
 
+    private int fftResolution;
+
     private int bandHorizontal = 20;
     private double[] magnitudes;
+
+    private List<Double> fmList;
+
+    private double freqM;
 
     float factor = 4.0f;
 
@@ -51,8 +60,9 @@ public class FrequencyView extends View {
 
     float umbral = 0.3f;
 
-
     private float scale = 1.2f;
+
+    private boolean showFreqM = false;
 
     private int[] colorRainbow = new int[] {  0xFF000000,0xFF0000FF , 0xFF00FFFF,0xFF00FF00,0xFFFFFF00,0xFFFF0000,  0xFFFF00FF,   0xFFFFFFFF  };
     private int[] colorFire = new int[] {    0xFFFFFFFF, 0xFFFFFF00, 0xFFFF0000, 0xFF000000 };
@@ -65,6 +75,14 @@ public class FrequencyView extends View {
 
     public void setUmbral(float value){
         umbral = value;
+    }
+
+    public void setShowFreqM(boolean value){
+        showFreqM = value;
+    }
+
+    public boolean getShowFreqM(){
+        return showFreqM;
     }
 
     // Window
@@ -99,12 +117,21 @@ public class FrequencyView extends View {
      */
     public void setFFTResolution(int res) {
         magnitudes = new double[res];
+        fftResolution = res;
     }
     public void setSamplingRate(int sampling) {
         samplingRate = sampling;
     }
     public void setMagnitudes(double[] m) {
         System.arraycopy(m, 0, magnitudes, 0, m.length);
+    }
+
+    public void setFmList(){
+        fmList = new ArrayList<>();
+        int size = (samplingRate/fftResolution)*15;
+        for (int i = 0; i < size; i++){
+            fmList.add(0.0);
+        }
     }
     
     /**
@@ -136,27 +163,47 @@ public class FrequencyView extends View {
 
         int band = 10;// Ancho de la linea que se grafica
 
-        for (int k = 0; k < band; k++) {
-            for (int i = 0; i < height; i++) {
-                float j = getValueFromRelativePosition((float) (height - i) / height, 1, samplingRate, false);
-                j /= (samplingRate);
-                int posMagnitudes = (int) (j * (magnitudes.length-1));
+        if (!showFreqM) {
+            for (int k = 0; k < band; k++) {
+                    for (int i = 0; i < height; i++) {
+                        float j = getValueFromRelativePosition((float) (height - i) / height, 1, samplingRate, false);
+                        j /= (samplingRate);
+                        int posMagnitudes = (int) (j * (magnitudes.length - 1));
 
-                //Rampa de compensacion
-                float weight = posMagnitudes/factor;
-                if (weight > 4.0f)
-                    weight = 4.0f;
-                float mag = (float) magnitudes[posMagnitudes]*weight;
-                //*********************
+                        //Rampa de compensacion
+                        float weight = posMagnitudes / factor;
+                        if (weight > 4.0f)
+                            weight = 4.0f;
+                        float mag = (float) magnitudes[posMagnitudes] * weight;
+                        //*********************
 
-                int c = getInterpolatedColor(colors, mag / maxMagnitud);
-                paint.setColor(c);
-                int x = (pos % rWidth+k);
-                int y = i;
-                this.canvas.drawPoint(x, y, paint);
-                this.canvas.drawPoint(x, y, paint); // make color brighter
+                        int c = getInterpolatedColor(colors, mag / maxMagnitud);
+                        paint.setColor(c);
+                        int x = (pos % rWidth + k);
+                        int y = i;
+                        this.canvas.drawPoint(x, y, paint);
+                        this.canvas.drawPoint(x, y, paint); // make color brighter
 
+                    }
+                }
+
+        }
+        else {
+            float x1 = 0;
+            float y1 = height-1;
+            for (int k = 0; k < fmList.size(); k++){
+                double val = fmList.get(k);
+                float valFm = (float) val*(samplingRate/fftResolution);
+                float relPos = getRelativePosition(valFm,1,samplingRate,false);
+                float x2 = rWidth*k/(fmList.size());
+                float y2 = height - (relPos*height);
+                paint.setColor(colors[1]);
+                if ((x1>0 && x1<width) && (x2>0 && x2<width))
+                    canvas.drawLine(x1, y1, x2, y2, paint);
+                x1 = x2;
+                y1 = y2;
             }
+
         }
 
 
@@ -167,6 +214,7 @@ public class FrequencyView extends View {
             canvas.drawBitmap(bitmap, (float) wColor - pos%rWidth, 0, paint);
             canvas.drawBitmap(bitmap, (float) wColor + (rWidth - pos%rWidth), 0, paint);
         }
+
 
         // Draw color scale
         paint.setColor(Color.BLACK);
@@ -240,5 +288,18 @@ public class FrequencyView extends View {
 
         return Color.argb(a, r, g, b);
     }
-    
+
+    public void setFreqM(double freqM) {
+        fmList.add(0,freqM);
+        fmList.remove(fmList.size()-1);
+        this.freqM = freqM;
+    }
+
+    public int getFftResolution() {
+        return fftResolution;
+    }
+
+    public void setFftResolution(int fftResolution) {
+        this.fftResolution = fftResolution;
+    }
 }
