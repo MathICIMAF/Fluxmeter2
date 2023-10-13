@@ -47,7 +47,6 @@ public class FrequencyView extends View {
 
     private int fftResolution;
 
-    private int bandHorizontal = 20;
     private double[] magnitudes;
 
     private List<Double> fmList;
@@ -163,47 +162,27 @@ public class FrequencyView extends View {
 
         int band = 10;// Ancho de la linea que se grafica
 
-        if (!showFreqM) {
-            for (int k = 0; k < band; k++) {
-                    for (int i = 0; i < height; i++) {
-                        float j = getValueFromRelativePosition((float) (height - i) / height, 1, samplingRate, false);
-                        j /= (samplingRate);
-                        int posMagnitudes = (int) (j * (magnitudes.length - 1));
+        for (int k = 0; k < band; k++) {
+            for (int i = 0; i < height; i++) {
+                float j = getValueFromRelativePosition((float) (height - i) / height, 1, samplingRate, false);
+                j /= (samplingRate);
+                int posMagnitudes = (int) (j * (magnitudes.length - 1));
 
-                        //Rampa de compensacion
-                        float weight = posMagnitudes / factor;
-                        if (weight > 4.0f)
-                            weight = 4.0f;
-                        float mag = (float) magnitudes[posMagnitudes] * weight;
-                        //*********************
+                //Rampa de compensacion
+                float weight = posMagnitudes / factor;
+                if (weight > 4.0f)
+                    weight = 4.0f;
+                float mag = (float) magnitudes[posMagnitudes] * weight;
+                //*********************
 
-                        int c = getInterpolatedColor(colors, mag / maxMagnitud);
-                        paint.setColor(c);
-                        int x = (pos % rWidth + k);
-                        int y = i;
-                        this.canvas.drawPoint(x, y, paint);
-                        this.canvas.drawPoint(x, y, paint); // make color brighter
+                int c = getInterpolatedColor(colors, mag / maxMagnitud);
+                paint.setColor(c);
+                int x = (pos % rWidth + k);
+                int y = i;
+                this.canvas.drawPoint(x, y, paint);
+                this.canvas.drawPoint(x, y, paint); // make color brighter
 
-                    }
-                }
-
-        }
-        else {
-            float x1 = 0;
-            float y1 = height-1;
-            for (int k = 0; k < fmList.size(); k++){
-                double val = fmList.get(k);
-                float valFm = (float) val*(samplingRate/fftResolution);
-                float relPos = getRelativePosition(valFm,1,samplingRate,false);
-                float x2 = rWidth*k/(fmList.size());
-                float y2 = height - (relPos*height);
-                paint.setColor(colors[1]);
-                if ((x1>0 && x1<width) && (x2>0 && x2<width))
-                    canvas.drawLine(x1, y1, x2, y2, paint);
-                x1 = x2;
-                y1 = y2;
             }
-
         }
 
 

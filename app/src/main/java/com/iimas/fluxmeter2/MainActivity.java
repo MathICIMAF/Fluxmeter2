@@ -12,11 +12,18 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.saadahmedsoft.popupdialog.PopupDialog;
 import com.saadahmedsoft.popupdialog.Styles;
 import com.saadahmedsoft.popupdialog.listener.OnDialogButtonClickListener;
@@ -40,11 +47,19 @@ public class MainActivity extends AppCompatActivity {
     public double[] mags;
 
     private FrequencyView frequencyView;
+    private FrequencyMediaView frequencyMediaView;
+
+    LineChart lineChart;
+    List<Entry> entries;
+    LineData lineData;
+    LineDataSet lineDataSet;
 
     private SeekBar seekBar;
     private TextView umbralText,fmText,fftText;
 
     private CheckBox showFeqMCheck;
+    private List<Double> fmList;
+
 
 
     @SuppressLint("MissingInflatedId")
@@ -55,11 +70,14 @@ public class MainActivity extends AppCompatActivity {
         recorder = new ContinuousRecord(frecuencySampling);
 
         frequencyView = findViewById(R.id.frequency_view);
+        frequencyMediaView = findViewById(R.id.frequency_media_view);
         seekBar = findViewById(R.id.seek_umbral);
         umbralText = findViewById(R.id.umbral_text);
         fmText = findViewById(R.id.fmText);
         fftText = findViewById(R.id.fftText);
         showFeqMCheck = findViewById(R.id.fmediaCheck);
+        lineChart = findViewById(R.id.lineChart);
+        initializeChart();
 
         fmText.setText("Fm: "+frecuencySampling+ "Hz" );
         fftText.setText("Ventana: "+windowSize);
@@ -67,7 +85,16 @@ public class MainActivity extends AppCompatActivity {
         frequencyView.setFFTResolution(windowSize);
         frequencyView.setSamplingRate(frecuencySampling);
         frequencyView.setBackgroundColor(Color.BLACK);
-        frequencyView.setFmList();
+
+        frequencyMediaView.setFFTResolution(windowSize);
+        frequencyMediaView.setSamplingRate(frecuencySampling);
+        frequencyMediaView.setBackgroundColor(Color.BLACK);
+
+        fmList = new ArrayList<>();
+        int size = (frecuencySampling/windowSize)*10;
+        for (int i = 0; i < size; i++)
+            fmList.add(0.0);
+        frequencyMediaView.setFmList(fmList);
 
         seekBar.setProgress((int)(frequencyView.getUmbral()*100));
 
@@ -94,9 +121,18 @@ public class MainActivity extends AppCompatActivity {
         showFeqMCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                showFreqM(b);
+                if (b){
+                    frequencyView.setVisibility(View.GONE);
+                    lineChart.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    frequencyView.setVisibility(View.VISIBLE);
+                    lineChart.setVisibility(View.GONE);
+                }
             }
         });
+
 
     }
 
@@ -225,25 +261,49 @@ public class MainActivity extends AppCompatActivity {
 
     void process(){
         FrequencyScanner frequencyScanner = new FrequencyScanner();
-        if (frequencyView.getShowFreqM()){
+        if (showFeqMCheck.isChecked()){
             double freqM = frequencyScanner.extractFreqMean(fftBuffer);
-            frequencyView.setFreqM(freqM);
+            /*fmList.remove(0);
+            fmList.add(freqM);
+            frequencyMediaView.setFmList(fmList);
+
+             */
+            entries.add(new Entry(entries.size()-1,(float) freqM));
+            entries.remove(0);
+            runOnUiThread(() -> {
+                lineChart.invalidate();
+                //frequencyMediaView.invalidate();
+            });
         }
         else {
             mags =  frequencyScanner.extractFrequencies(fftBuffer);
             frequencyView.setMagnitudes(mags);
+            runOnUiThread(() -> {
+                frequencyView.invalidate();
+            });
         }
-        runOnUiThread(() -> {
-            frequencyView.invalidate();
-        });
     }
 
-    void showFreqM(boolean b){
-        frequencyView.setShowFreqM(b);
-        frequencyView.setFFTResolution(windowSize);
-        frequencyView.setSamplingRate(frecuencySampling);
-        frequencyView.setFmList();
-        loadEngine();
-    }
 
+    void initializeChart(){
+        lineChart = findViewById(R.id.lineChart);
+        XAxis xAxis = lineChart.getXAxis();
+
+        YAxis yAxis = lineChart.getAxisLeft();
+
+        entries = new ArrayList<>();
+
+        int size = (frecuencySampling/windowSize)*10;
+        for (int i = 0; i < size; i++){
+            Entry entry = new Entry(i,0);
+            entries.add(entry);
+        }
+        lineDataSet = new LineDataSet(entries,"Frecuencia Media");
+        lineDataSet.setColor(Color.BLACK);
+        lineDataSet.setLineWidth(2);
+        lineDataSet.setDrawCircles(false);
+
+        lineData = new LineData(lineDataSet);
+        lineChart.setData(lineData);
+    }
 }

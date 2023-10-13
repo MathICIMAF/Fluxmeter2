@@ -17,6 +17,22 @@
 
     </com.iimas.fluxmeter2.FrequencyView>
 
+    <com.iimas.fluxmeter2.FrequencyMediaView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.8"
+        android:visibility="gone"
+        android:id="@+id/frequency_media_view">
+
+    </com.iimas.fluxmeter2.FrequencyMediaView>
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.8"
+        android:visibility="gone"
+        android:id="@+id/lineChart"/>
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
