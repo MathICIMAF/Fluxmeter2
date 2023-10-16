@@ -17,14 +17,6 @@
 
     </com.iimas.fluxmeter2.FrequencyView>
 
-    <com.iimas.fluxmeter2.FrequencyMediaView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="0.8"
-        android:visibility="gone"
-        android:id="@+id/frequency_media_view">
-
-    </com.iimas.fluxmeter2.FrequencyMediaView>
 
     <com.github.mikephil.charting.charts.LineChart
         android:layout_width="0dp"
@@ -76,6 +68,19 @@
             android:id="@+id/fmediaCheck"
             android:text="Frecuencia media"
             />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ipText"
+            android:text="IP: 0.5"
+            android:gravity="center"
+            android:padding="4dp"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:background="@drawable/back_rect"/>
+
 
     </LinearLayout>
 

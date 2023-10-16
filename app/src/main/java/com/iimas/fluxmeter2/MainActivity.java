@@ -10,6 +10,8 @@ import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +26,7 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.saadahmedsoft.popupdialog.PopupDialog;
 import com.saadahmedsoft.popupdialog.Styles;
 import com.saadahmedsoft.popupdialog.listener.OnDialogButtonClickListener;
@@ -35,15 +38,18 @@ public class MainActivity extends AppCompatActivity {
 
     public static int frecuencySampling = 22050;
     public static ContinuousRecord recorder;
-    public int windowSize = 256;  // fft Resolution o la N
+    public static int windowSize = 256;  // fft Resolution o la N
+
+    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*10;
+
+    //Variable que indica cuando se actualiza el IP;
+    int countIP;
+    double fmMax,sumFm,fmMin;
 
 
     // Buffers
     private List<short[]> bufferStack; // Store trunks of buffers
     private short[] fftBuffer; // buffer supporting the fft process
-    private float[] re; // buffer holding real part during fft process
-    private float[] im; // buffer holding imaginary part during fft process
-
     public double[] mags;
 
     private FrequencyView frequencyView;
@@ -55,10 +61,9 @@ public class MainActivity extends AppCompatActivity {
     LineDataSet lineDataSet;
 
     private SeekBar seekBar;
-    private TextView umbralText,fmText,fftText;
+    private TextView umbralText,fmText,fftText,ipText;
 
     private CheckBox showFeqMCheck;
-    private List<Double> fmList;
 
 
 
@@ -69,12 +74,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recorder = new ContinuousRecord(frecuencySampling);
 
+        countIP = 0;
+        fmMax = 0;
+        fmMin = Double.MAX_VALUE;
+        sumFm = 0;
+
         frequencyView = findViewById(R.id.frequency_view);
-        frequencyMediaView = findViewById(R.id.frequency_media_view);
         seekBar = findViewById(R.id.seek_umbral);
         umbralText = findViewById(R.id.umbral_text);
         fmText = findViewById(R.id.fmText);
         fftText = findViewById(R.id.fftText);
+        ipText = findViewById(R.id.ipText);
         showFeqMCheck = findViewById(R.id.fmediaCheck);
         lineChart = findViewById(R.id.lineChart);
         initializeChart();
@@ -86,15 +96,6 @@ public class MainActivity extends AppCompatActivity {
         frequencyView.setSamplingRate(frecuencySampling);
         frequencyView.setBackgroundColor(Color.BLACK);
 
-        frequencyMediaView.setFFTResolution(windowSize);
-        frequencyMediaView.setSamplingRate(frecuencySampling);
-        frequencyMediaView.setBackgroundColor(Color.BLACK);
-
-        fmList = new ArrayList<>();
-        int size = (frecuencySampling/windowSize)*10;
-        for (int i = 0; i < size; i++)
-            fmList.add(0.0);
-        frequencyMediaView.setFmList(fmList);
 
         seekBar.setProgress((int)(frequencyView.getUmbral()*100));
 
@@ -183,8 +184,7 @@ public class MainActivity extends AppCompatActivity {
         // Build buffers for runtime
         int n = windowSize;
         fftBuffer = new short[n];
-        re = new float[n];
-        im = new float[n];
+
         bufferStack = new ArrayList<>();
         int l = recorder.getBufferLength()/(n/2);
         for (int i=0; i<l+1; i++) //+1 because the last one has to be used again and sent to first position
@@ -262,17 +262,29 @@ public class MainActivity extends AppCompatActivity {
     void process(){
         FrequencyScanner frequencyScanner = new FrequencyScanner();
         if (showFeqMCheck.isChecked()){
+            countIP++;
             double freqM = frequencyScanner.extractFreqMean(fftBuffer);
-            /*fmList.remove(0);
-            fmList.add(freqM);
-            frequencyMediaView.setFmList(fmList);
-
-             */
-            entries.add(new Entry(entries.size()-1,(float) freqM));
-            entries.remove(0);
+            if (fmMax < freqM) fmMax = freqM;
+            if (fmMin > freqM) fmMin = freqM;
+            sumFm += freqM;
+            if (countIP == VISIBLE_NUM){
+                double med = sumFm/countIP;
+                float ip = (float) ((fmMax-fmMin)/med);
+                String s = String.format("%.2f", ip);//+("FMin:"+String.format("%.2f", fmMin))+("FMax:"+String.format("%.2f", fmMax))
+                        //+("FMed:"+String.format("%.2f", med));
+                countIP = 0;
+                sumFm = 0;
+                fmMin = Double.MAX_VALUE;
+                fmMax = 0;
+                new Handler(Looper.getMainLooper()).post(new Runnable(){
+                    @Override
+                    public void run() {
+                        ipText.setText("IP:"+s);
+                    }
+                });
+            }
             runOnUiThread(() -> {
-                lineChart.invalidate();
-                //frequencyMediaView.invalidate();
+                addEntry((float) freqM*frecuencySampling/windowSize);
             });
         }
         else {
@@ -285,21 +297,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void addEntry( float y) {
+        LineData data = lineChart.getData();
+
+
+        if(lineDataSet == null){
+            lineDataSet = new LineDataSet(null, "Dynamic data");
+            lineDataSet.setHighlightEnabled(false);
+            data.addDataSet(lineDataSet);
+        }
+        if(lineDataSet.getEntryCount() >= VISIBLE_NUM) {
+            lineDataSet.removeFirst();
+
+            for (int i=0; i<lineDataSet.getEntryCount(); i++) {
+                Entry entryToChange = lineDataSet.getEntryForIndex(i);
+                entryToChange.setX(entryToChange.getX() - 1);
+            }
+        }
+
+        data.addEntry(new Entry( lineDataSet.getEntryCount(),y/1000), 0);
+
+        lineChart.notifyDataSetChanged();
+        lineChart.invalidate();
+
+    }
+
     void initializeChart(){
         lineChart = findViewById(R.id.lineChart);
+        lineChart.setBackgroundColor(Color.BLACK);
         XAxis xAxis = lineChart.getXAxis();
 
-        YAxis yAxis = lineChart.getAxisLeft();
+        YAxis yAxis = lineChart.getAxisRight();
+        yAxis.setTextColor(Color.WHITE);
 
         entries = new ArrayList<>();
 
-        int size = (frecuencySampling/windowSize)*10;
-        for (int i = 0; i < size; i++){
+        for (int i = 0; i < VISIBLE_NUM; i++){
             Entry entry = new Entry(i,0);
             entries.add(entry);
         }
         lineDataSet = new LineDataSet(entries,"Frecuencia Media");
-        lineDataSet.setColor(Color.BLACK);
+        lineDataSet.setColor(Color.WHITE);
         lineDataSet.setLineWidth(2);
         lineDataSet.setDrawCircles(false);
 
