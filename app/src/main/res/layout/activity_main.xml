@@ -81,6 +81,29 @@
             android:textSize="20sp"
             android:background="@drawable/back_rect"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fMaxText"
+            android:text=""
+            android:gravity="center"
+            android:padding="4dp"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:background="@drawable/back_rect"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fmmText"
+            android:text=""
+            android:gravity="center"
+            android:padding="4dp"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:background="@drawable/back_rect"/>
+
 
     </LinearLayout>
 

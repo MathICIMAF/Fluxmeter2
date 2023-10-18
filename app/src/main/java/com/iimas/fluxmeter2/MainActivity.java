@@ -40,17 +40,21 @@ public class MainActivity extends AppCompatActivity {
     public static ContinuousRecord recorder;
     public static int windowSize = 256;  // fft Resolution o la N
 
+    public static float maxMagnitud = 15000;
+
     private static int VISIBLE_NUM = (frecuencySampling/windowSize)*10;
 
     //Variable que indica cuando se actualiza el IP;
     int countIP;
     double fmMax,sumFm,fmMin;
 
+    boolean senhalPrueba = false;
+
 
     // Buffers
     private List<short[]> bufferStack; // Store trunks of buffers
     private short[] fftBuffer; // buffer supporting the fft process
-    public double[] mags;
+    public double[] mags,fftBufferDouble;
 
     private FrequencyView frequencyView;
     private FrequencyMediaView frequencyMediaView;
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     LineDataSet lineDataSet;
 
     private SeekBar seekBar;
-    private TextView umbralText,fmText,fftText,ipText;
+    private TextView umbralText,fmText,fftText,ipText,fMaxText,fmmText;
 
     private CheckBox showFeqMCheck;
 
@@ -83,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
         seekBar = findViewById(R.id.seek_umbral);
         umbralText = findViewById(R.id.umbral_text);
         fmText = findViewById(R.id.fmText);
+        fMaxText = findViewById(R.id.fMaxText);
+        fmmText = findViewById(R.id.fmmText);
         fftText = findViewById(R.id.fftText);
         ipText = findViewById(R.id.ipText);
         showFeqMCheck = findViewById(R.id.fmediaCheck);
@@ -125,11 +131,13 @@ public class MainActivity extends AppCompatActivity {
                 if (b){
                     frequencyView.setVisibility(View.GONE);
                     lineChart.setVisibility(View.VISIBLE);
+                    seekBar.setProgress(30);
                 }
                 else
                 {
                     frequencyView.setVisibility(View.VISIBLE);
                     lineChart.setVisibility(View.GONE);
+                    seekBar.setProgress(30);
                 }
             }
         });
@@ -199,23 +207,38 @@ public class MainActivity extends AppCompatActivity {
     private void getTrunks(short[] recordBuffer) {
         int n = windowSize;
 
-        // Trunks are consecutive n/2 length samples
-        for (int i=0; i<bufferStack.size()-1; i++)
-            System.arraycopy(recordBuffer, n/2*i, bufferStack.get(i+1), 0, n/2);
+        if (!senhalPrueba) {
+            // Trunks are consecutive n/2 length samples
+            for (int i = 0; i < bufferStack.size() - 1; i++)
+                System.arraycopy(recordBuffer, n / 2 * i, bufferStack.get(i + 1), 0, n / 2);
 
-        // Build n length buffers for processing
-        // Are build from consecutive trunks
-        for (int i=0; i<bufferStack.size()-1; i++) {
-            System.arraycopy(bufferStack.get(i), 0, fftBuffer, 0, n/2);
-            System.arraycopy(bufferStack.get(i+1), 0, fftBuffer, n/2, n/2);
-            process();
+            // Build n length buffers for processing
+            // Are build from consecutive trunks
+            for (int i = 0; i < bufferStack.size() - 1; i++) {
+                System.arraycopy(bufferStack.get(i), 0, fftBuffer, 0, n / 2);
+                System.arraycopy(bufferStack.get(i + 1), 0, fftBuffer, n / 2, n / 2);
+                process();
+            }
+
+            // Last item has not yet fully be used (only its first half)
+            // Move it to first position in arraylist so that its last half is used
+            short[] first = bufferStack.get(0);
+            short[] last = bufferStack.get(bufferStack.size() - 1);
+            System.arraycopy(last, 0, first, 0, n / 2);
         }
+        else {
 
-        // Last item has not yet fully be used (only its first half)
-        // Move it to first position in arraylist so that its last half is used
-        short[] first = bufferStack.get(0);
-        short[] last = bufferStack.get(bufferStack.size()-1);
-        System.arraycopy(last, 0, first, 0, n/2);
+            fftBufferDouble = new double[n];
+            int M = 3;
+            if (countIP < VISIBLE_NUM / 4 || (countIP > 2 * VISIBLE_NUM / 4 && countIP < 3 * VISIBLE_NUM / 4))
+                M = 5;
+            for (int k = 0; k < 5; k++) {
+                for (int i = 0; i < n; i++) {
+                    fftBufferDouble[i] = Math.sin((2 * Math.PI * i * M) / n);
+                }
+                process();
+            }
+        }
     }
 
     @Override
@@ -263,15 +286,24 @@ public class MainActivity extends AppCompatActivity {
         FrequencyScanner frequencyScanner = new FrequencyScanner();
         if (showFeqMCheck.isChecked()){
             countIP++;
-            double freqM = frequencyScanner.extractFreqMean(fftBuffer);
+            double freqM = (senhalPrueba)?frequencyScanner.extractFreqMean(fftBufferDouble):frequencyScanner.extractFreqMean(fftBuffer,seekBar.getProgress()/100.0f);
             if (fmMax < freqM) fmMax = freqM;
             if (fmMin > freqM) fmMin = freqM;
-            sumFm += freqM;
+            sumFm += freqM;;
             if (countIP == VISIBLE_NUM){
                 double med = sumFm/countIP;
-                float ip = (float) ((fmMax-fmMin)/med);
-                String s = String.format("%.2f", ip);//+("FMin:"+String.format("%.2f", fmMin))+("FMax:"+String.format("%.2f", fmMax))
-                        //+("FMed:"+String.format("%.2f", med));
+                float ip;
+                if (senhalPrueba){
+                    ip = (float) ((fmMax-fmMin)/med);
+                }
+                else {
+                    ip = ((med > 10) || fmMax > seekBar.getProgress()) ? (float) ((fmMax - fmMin) / med) : 0.0f;
+                    fmMax*=((frecuencySampling/windowSize)/2);
+                    med*=((frecuencySampling/windowSize)/2);
+                }
+                String s = String.format("%.2f", ip);
+                String fmax = ("FMax:"+String.format("%.2f", fmMax));
+                String fmed = ("FMed:"+String.format("%.2f", med));
                 countIP = 0;
                 sumFm = 0;
                 fmMin = Double.MAX_VALUE;
@@ -280,11 +312,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         ipText.setText("IP:"+s);
+                        fMaxText.setText(fmax);
+                        fmmText.setText(fmed);
                     }
                 });
             }
             runOnUiThread(() -> {
-                addEntry((float) freqM*frecuencySampling/windowSize);
+                int fmInt = (int)freqM;
+                addEntry(fmInt*(frecuencySampling/windowSize)/2);
             });
         }
         else {

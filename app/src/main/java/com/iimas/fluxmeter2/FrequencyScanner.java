@@ -1,5 +1,7 @@
 package com.iimas.fluxmeter2;
 
+import static com.iimas.fluxmeter2.MainActivity.maxMagnitud;
+
 import org.jtransforms.fft.DoubleFFT_1D;
 
 public class FrequencyScanner {
@@ -60,7 +62,7 @@ public class FrequencyScanner {
         return res;
     }
 
-    public double extractFreqMean(short[] sampleData){
+    public double extractFreqMean(short[] sampleData,double umbral){
         double res = 0;
         DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
         double[] a = new double[(sampleData.length + sampleData.length)];
@@ -71,7 +73,32 @@ public class FrequencyScanner {
         double sum_pi = 0;
         double sum_i_pi = 0;
 
-        for(int i = 0; i < a.length / 2; ++i) {
+        for(int i = 0; i < a.length / 4; ++i) {
+            double re  = a[2*i];
+            double im  = a[2*i+1];
+            double mag = Math.sqrt(re * re + im * im);
+            if (mag/maxMagnitud < umbral)
+                mag = 0;
+            sum_pi+=mag;
+            sum_i_pi+=(i*mag);
+
+        }
+
+        return sum_i_pi/sum_pi;
+    }
+
+    public double extractFreqMean(double[] sampleData){
+        double res = 0;
+        DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
+        double[] a = new double[(sampleData.length + sampleData.length)];
+
+        System.arraycopy(applyWindowDouble(sampleData), 0, a, 0, sampleData.length);
+        fft.realForward(a);
+
+        double sum_pi = 0;
+        double sum_i_pi = 0;
+
+        for(int i = 0; i < a.length / 4; ++i) {
             double re  = a[2*i];
             double im  = a[2*i+1];
             double mag = Math.sqrt(re * re + im * im);
@@ -82,6 +109,7 @@ public class FrequencyScanner {
 
         return sum_i_pi/sum_pi;
     }
+
 
     /** build a Hamming window filter for samples of a given size
      * See http://www.labbookpages.co.uk/audio/firWindowing.html#windows
@@ -107,6 +135,16 @@ public class FrequencyScanner {
         buildHammWindow(input.length);
         for(int i = 0; i < input.length; ++i) {
             res[i] = (double)input[i] * window[i];
+        }
+        return res;
+    }
+
+    private double[] applyWindowDouble(double[] input) {
+        double[] res = new double[input.length];
+
+        buildHammWindow(input.length);
+        for(int i = 0; i < input.length; ++i) {
+            res[i] = input[i] * window[i];
         }
         return res;
     }

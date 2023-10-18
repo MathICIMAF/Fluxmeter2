@@ -15,6 +15,8 @@
 
 package com.iimas.fluxmeter2;
 
+import static com.iimas.fluxmeter2.MainActivity.maxMagnitud;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -55,7 +57,6 @@ public class FrequencyView extends View {
 
     float factor = 4.0f;
 
-    private float maxMagnitud = 15000;
 
     float umbral = 0.3f;
 
