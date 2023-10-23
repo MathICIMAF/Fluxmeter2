@@ -39,4 +39,6 @@ dependencies {
     implementation ("com.github.wendykierp:JTransforms:3.1")
     implementation ("com.saadahmedev.popup-dialog:popup-dialog:1.0.5")
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("androidx.preference:preference-ktx:1.2.0")
+
 }

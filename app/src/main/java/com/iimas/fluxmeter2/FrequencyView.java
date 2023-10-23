@@ -51,10 +51,6 @@ public class FrequencyView extends View {
 
     private double[] magnitudes;
 
-    private List<Double> fmList;
-
-    private double freqM;
-
     float factor = 4.0f;
 
 
@@ -75,14 +71,6 @@ public class FrequencyView extends View {
 
     public void setUmbral(float value){
         umbral = value;
-    }
-
-    public void setShowFreqM(boolean value){
-        showFreqM = value;
-    }
-
-    public boolean getShowFreqM(){
-        return showFreqM;
     }
 
     // Window
@@ -126,14 +114,6 @@ public class FrequencyView extends View {
         System.arraycopy(m, 0, magnitudes, 0, m.length);
     }
 
-    public void setFmList(){
-        fmList = new ArrayList<>();
-        int size = (samplingRate/fftResolution)*15;
-        for (int i = 0; i < size; i++){
-            fmList.add(0.0);
-        }
-    }
-    
     /**
      * Called whenever a redraw is needed
      * Renders spectrogram and scale on the right
@@ -247,6 +227,7 @@ public class FrequencyView extends View {
     public int getInterpolatedColor(int[] colors, float unit) {
         if (unit <= umbral) return colors[0];
         if (unit >= 1.0f) return colors[colors.length - 1];
+        if (unit>= umbral*3) return colors[colors.length - 1];
 
 
         float unit_aux = unit;
@@ -269,17 +250,5 @@ public class FrequencyView extends View {
         return Color.argb(a, r, g, b);
     }
 
-    public void setFreqM(double freqM) {
-        fmList.add(0,freqM);
-        fmList.remove(fmList.size()-1);
-        this.freqM = freqM;
-    }
 
-    public int getFftResolution() {
-        return fftResolution;
-    }
-
-    public void setFftResolution(int fftResolution) {
-        this.fftResolution = fftResolution;
-    }
 }

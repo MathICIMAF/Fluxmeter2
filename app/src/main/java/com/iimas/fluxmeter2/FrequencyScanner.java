@@ -4,12 +4,17 @@ import static com.iimas.fluxmeter2.MainActivity.maxMagnitud;
 
 import org.jtransforms.fft.DoubleFFT_1D;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FrequencyScanner {
     private double[] window;
 
     public FrequencyScanner() {
         window = null;
     }
+
+    double factor = 16; //Recta de compesacion
 
     /** extract the dominant frequency from 16bit PCM data.
      * @param sampleData an array containing the raw 16bit PCM data.
@@ -79,12 +84,74 @@ public class FrequencyScanner {
             double mag = Math.sqrt(re * re + im * im);
             if (mag/maxMagnitud < umbral)
                 mag = 0;
+            double weight = i/factor;
+            if (weight > 4.0)
+                weight = 4.0;
+            mag*=weight;
             sum_pi+=mag;
-            sum_i_pi+=(i*mag);
+            sum_i_pi+=(i*mag);//
 
         }
 
-        return sum_i_pi/sum_pi;
+        return (sum_pi>0.000001)?(sum_i_pi/sum_pi):0.0;
+    }
+
+    public double extractFreqMeanReal(short[] sampleData,double umbral){
+        double res = 0;
+        DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
+        double[] a = new double[(sampleData.length + sampleData.length)];
+
+        System.arraycopy(applyWindow(sampleData), 0, a, 0, sampleData.length);
+        fft.realForward(a);
+
+        double sum_pi = 0;
+        double sum_i_pi = 0;
+
+        for(int i = 0; i < a.length / 4; ++i) {
+            double re  = a[2*i];
+            //double im  = a[2*i+1];
+            double mag = re;
+            if (mag/maxMagnitud < umbral)
+                mag = 0;
+            sum_pi+=mag;
+            sum_i_pi+=(i*mag);//
+
+        }
+
+        return (sum_pi>0.000001)?(sum_i_pi/sum_pi):0.0;
+    }
+
+    public double extractFreqMax(short[] sampleData,double umbral){
+        double res = 0;
+        DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
+        double[] a = new double[(sampleData.length + sampleData.length)];
+
+        System.arraycopy(applyWindow(sampleData), 0, a, 0, sampleData.length);
+        fft.realForward(a);
+
+        double sum_pi = 0;
+        double sum_i_pi = 0;
+        List<Double> magnitudes = new ArrayList<>();
+        for(int i = 0; i < a.length / 4; ++i) {
+            double re  = a[2*i];
+            double im  = a[2*i+1];
+            double mag = Math.sqrt(re * re + im * im);
+            if (mag/maxMagnitud < umbral)
+                mag = 0;
+            magnitudes.add(mag);
+            sum_pi+=mag;
+            sum_i_pi+=(i*mag);//
+
+        }
+
+        double fmedia = (sum_pi>0.000001)?(sum_i_pi/sum_pi):0.0;
+        double sum_i_pi_fm = 0;
+        for (int i = 0; i < magnitudes.size(); i++){
+            sum_i_pi_fm += magnitudes.get(i)*(fmedia-i)*(fmedia-i);
+        }
+        double bw = (sum_pi>0.000001)?Math.sqrt(sum_i_pi_fm/sum_pi):0.0;
+
+        return fmedia+bw;
     }
 
     public double extractFreqMean(double[] sampleData){

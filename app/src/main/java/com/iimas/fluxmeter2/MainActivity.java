@@ -4,9 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -26,7 +29,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.saadahmedsoft.popupdialog.PopupDialog;
 import com.saadahmedsoft.popupdialog.Styles;
 import com.saadahmedsoft.popupdialog.listener.OnDialogButtonClickListener;
@@ -42,10 +44,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static float maxMagnitud = 15000;
 
-    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*10;
+    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*8;
+
+
 
     //Variable que indica cuando se actualiza el IP;
     int countIP;
+
+    List<Float> ipList;
     double fmMax,sumFm,fmMin;
 
     boolean senhalPrueba = false;
@@ -57,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
     public double[] mags,fftBufferDouble;
 
     private FrequencyView frequencyView;
-    private FrequencyMediaView frequencyMediaView;
 
     LineChart lineChart;
     List<Entry> entries;
@@ -67,22 +72,22 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private TextView umbralText,fmText,fftText,ipText,fMaxText,fmmText;
 
-    private CheckBox showFeqMCheck;
+    private CheckBox showFreqMCheck,showFreqMaxCheck;
 
-
+    SharedPreferences sharedPreferences;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recorder = new ContinuousRecord(frecuencySampling);
+
 
         countIP = 0;
+        ipList = new ArrayList<>();
         fmMax = 0;
         fmMin = Double.MAX_VALUE;
         sumFm = 0;
-
         frequencyView = findViewById(R.id.frequency_view);
         seekBar = findViewById(R.id.seek_umbral);
         umbralText = findViewById(R.id.umbral_text);
@@ -91,12 +96,63 @@ public class MainActivity extends AppCompatActivity {
         fmmText = findViewById(R.id.fmmText);
         fftText = findViewById(R.id.fftText);
         ipText = findViewById(R.id.ipText);
-        showFeqMCheck = findViewById(R.id.fmediaCheck);
+        showFreqMCheck = findViewById(R.id.fmediaCheck);
+        showFreqMaxCheck = findViewById(R.id.fmaxCheck);
         lineChart = findViewById(R.id.lineChart);
-        initializeChart();
+
+
+    }
+
+    private void startRecording() {
+        recorder.start(recordBuffer -> getTrunks(recordBuffer));
+    }
+    private void stopRecording() {
+        recorder.stop();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopRecording();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            loadEngine();
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.RECORD_AUDIO}, 1234);
+        }
+    }
+
+    void loadPreferences(){
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        frecuencySampling =  Integer.parseInt(sharedPreferences.getString("fmuestreo","11025"));
+        windowSize =  Integer.parseInt(sharedPreferences.getString("ventana","256"));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1234: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    loadEngine();
+                }
+            }
+        }
+    }
+
+    private void initializeViews(){
+        loadPreferences();
 
         fmText.setText("Fm: "+frecuencySampling+ "Hz" );
         fftText.setText("Ventana: "+windowSize);
+
+        recorder = new ContinuousRecord(frecuencySampling);
+
+        initializeChart();
 
         frequencyView.setFFTResolution(windowSize);
         frequencyView.setSamplingRate(frecuencySampling);
@@ -125,13 +181,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        showFeqMCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        showFreqMCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b){
                     frequencyView.setVisibility(View.GONE);
                     lineChart.setVisibility(View.VISIBLE);
                     seekBar.setProgress(30);
+                    showFreqMaxCheck.setChecked(false);
                 }
                 else
                 {
@@ -142,45 +199,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-    }
-
-    private void startRecording() {
-        recorder.start(recordBuffer -> getTrunks(recordBuffer));
-    }
-    private void stopRecording() {
-        recorder.stop();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        stopRecording();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            loadEngine();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.RECORD_AUDIO}, 1234);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1234: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    loadEngine();
+        showFreqMaxCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    //frequencyView.setVisibility(View.GONE);
+                    //lineChart.setVisibility(View.VISIBLE);
+                    //seekBar.setProgress(30);
+                    showFreqMCheck.setChecked(false);
+                }
+                else
+                {
+                    //frequencyView.setVisibility(View.VISIBLE);
+                    //lineChart.setVisibility(View.GONE);
+                    //seekBar.setProgress(30);
                 }
             }
-        }
+        });
+
     }
 
     private void loadEngine() {
+
+        initializeViews();
 
         // Stop and release recorder if running
         recorder.stop();
@@ -255,11 +296,15 @@ public class MainActivity extends AppCompatActivity {
         if (itemId == R.id.action_about){
             showAbout();
         }
-        if (itemId == R.id.action_play){
+        else if (itemId == R.id.action_play){
             startRecording();
         }
-        if (itemId == R.id.action_pause){
+        else if (itemId == R.id.action_pause){
             stopRecording();
+        }
+        else if (itemId == R.id.action_settings){
+            Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
@@ -284,22 +329,34 @@ public class MainActivity extends AppCompatActivity {
 
     void process(){
         FrequencyScanner frequencyScanner = new FrequencyScanner();
-        if (showFeqMCheck.isChecked()){
+        if (showFreqMCheck.isChecked()){
             countIP++;
-            double freqM = (senhalPrueba)?frequencyScanner.extractFreqMean(fftBufferDouble):frequencyScanner.extractFreqMean(fftBuffer,seekBar.getProgress()/100.0f);
+            double freqM = (senhalPrueba)?frequencyScanner.extractFreqMean(fftBufferDouble):frequencyScanner.extractFreqMax(fftBuffer,seekBar.getProgress()/100.0f);
             if (fmMax < freqM) fmMax = freqM;
             if (fmMin > freqM) fmMin = freqM;
-            sumFm += freqM;;
-            if (countIP == VISIBLE_NUM){
+            //
+            sumFm += freqM;
+            if (countIP == VISIBLE_NUM/4){
                 double med = sumFm/countIP;
                 float ip;
                 if (senhalPrueba){
                     ip = (float) ((fmMax-fmMin)/med);
                 }
                 else {
-                    ip = ((med > 10) || fmMax > seekBar.getProgress()) ? (float) ((fmMax - fmMin) / med) : 0.0f;
+                    ip = (float) ((fmMax - fmMin) / med) ;
                     fmMax*=((frecuencySampling/windowSize)/2);
                     med*=((frecuencySampling/windowSize)/2);
+                }
+                if (ipList.size() == 5){
+                    ipList.remove(0);
+                    ipList.add(ip);
+                    float sum = 0;
+                    for (int i = 0; i < ipList.size(); i++)
+                        sum+=ipList.get(i);
+                    ip = sum/ipList.size();
+                }
+                else {
+                    ipList.add(ip);
                 }
                 String s = String.format("%.2f", ip);
                 String fmax = ("FMax:"+String.format("%.2f", fmMax));

@@ -69,6 +69,13 @@
             android:text="Frecuencia media"
             />
 
+        <CheckBox
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fmaxCheck"
+            android:text="Frecuencia máxima"
+            />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -85,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fMaxText"
-            android:text=""
+            android:text="0.00"
             android:gravity="center"
             android:padding="4dp"
             android:layout_gravity="center"
@@ -96,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fmmText"
-            android:text=""
+            android:text="0.00"
             android:gravity="center"
             android:padding="4dp"
             android:layout_gravity="center"

@@ -1,6 +1,27 @@
 <resources>
     <string name="app_name">Doppler Ultrasound</string>
-    <string name="settings">Settings</string>
-    <string name="about">About</string>
+    <string name="settings">Ajustes</string>
+    <string name="about">Acerca de..</string>
     <string name="about_description">Doppler Ultrasound v0.5</string>
+    <string name="datos_paciente">Datos del paciente</string>
+
+    <string name="fmuestreo">Frecuencia de muestreo</string>
+    <string name="fmuestre_desc">Valores de frecuencia de muestreo en Hz</string>
+    <string name="nombre_paciente">Nombre del paciente</string>
+    <string name="nombre_paciente_desc">Cambiar el nombre del paciente</string>
+
+    <string-array name="fm_list">
+        <item>11025</item>
+        <item>22050</item>
+        <item>44100</item>
+    </string-array>
+
+    <string name="ventana">Tamaño de ventana</string>
+    <string name="ventana_desc">Tamaño de ventana de la FFT</string>
+
+    <string-array name="ventana_list">
+        <item>256</item>
+        <item>512</item>
+        <item>1024</item>
+    </string-array>
 </resources>
