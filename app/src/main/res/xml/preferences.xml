@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="General">
+        <ListPreference
+            android:defaultValue="22050"
+            android:dialogTitle="@string/fmuestreo"
+            android:entries="@array/fm_list"
+            android:entryValues="@array/fm_list"
+            android:key="fmuestreo"
+            android:summary="@string/fmuestre_desc"
+            android:title="@string/fmuestreo" />
+        <ListPreference
+            android:defaultValue="256"
+            android:dialogTitle="@string/ventana"
+            android:entries="@array/ventana_list"
+            android:entryValues="@array/ventana_list"
+            android:key="ventana"
+            android:summary="@string/ventana_desc"
+            android:title="@string/ventana" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/datos_paciente">
+
+        <EditTextPreference
+            android:key="nombre_paciente"
+            android:dialogTitle="@string/nombre_paciente"
+            android:summary="@string/nombre_paciente_desc"
+            android:inputType="text"
+            android:singleLine="true"
+            android:title="@string/nombre_paciente"/>
+
+
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>
