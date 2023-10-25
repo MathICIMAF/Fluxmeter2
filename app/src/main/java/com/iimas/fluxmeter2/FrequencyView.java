@@ -133,10 +133,7 @@ public class FrequencyView extends View {
         int rWidth = width-wColor-wFrequency;
         paint.setStrokeWidth(2);
         
-        // Get scale preferences
-		//String defFrequency = "Linear";//getString(R.string.preferences_frequency_scale_default_value);
-    	//boolean logFrequency = false;//!Misc.getPreference("frequency_scale", defFrequency).equals(defFrequency);
-        
+
         // Update buffer bitmap
         paint.setColor(Color.BLACK);
         this.canvas.drawLine(pos%rWidth, 0, pos%rWidth, height, paint);

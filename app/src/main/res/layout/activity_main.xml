@@ -12,7 +12,7 @@
     <com.iimas.fluxmeter2.FrequencyView
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.8"
+        android:layout_weight="0.75"
         android:id="@+id/frequency_view">
 
     </com.iimas.fluxmeter2.FrequencyView>
@@ -21,14 +21,15 @@
     <com.github.mikephil.charting.charts.LineChart
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.8"
+        android:layout_weight="0.75"
         android:visibility="gone"
         android:id="@+id/lineChart"/>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.2"
+        android:layout_weight="0.25"
+        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
@@ -36,6 +37,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:gravity="center"
+            android:visibility="gone"
             android:id="@+id/fmText"/>
 
         <TextView
@@ -43,13 +45,13 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:gravity="center"
+            android:visibility="gone"
             android:id="@+id/fftText"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:gravity="center"
             android:text="Umbral: 0.3"
             android:id="@+id/umbral_text">
 
@@ -59,57 +61,67 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:max="100"
+            android:progress="20"
             android:id="@+id/seek_umbral">
         </SeekBar>
 
-        <CheckBox
+        <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/fmediaCheck"
-            android:text="Frecuencia media"
-            />
+            android:orientation="vertical">
+            <RadioButton android:id="@+id/radio_spectrograma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Espectrograma"/>
+            <RadioButton android:id="@+id/radio_fmedia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Frecuencia media"/>
+            <RadioButton android:id="@+id/radio_fmax"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Frecuencia max"/>
+        </RadioGroup>
 
-        <CheckBox
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/fmaxCheck"
-            android:text="Frecuencia máxima"
-            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ipText"
-            android:text="IP: 0.5"
+            android:text="IP: 0.0"
             android:gravity="center"
             android:padding="4dp"
+            android:textColor="@color/black"
             android:layout_gravity="center"
             android:textStyle="bold"
-            android:textSize="20sp"
-            android:background="@drawable/back_rect"/>
+            android:textSize="15sp"
+            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fMaxText"
-            android:text="0.00"
+            android:text="FMed:0.00"
+            android:textColor="@color/black"
             android:gravity="center"
             android:padding="4dp"
             android:layout_gravity="center"
             android:textStyle="bold"
-            android:textSize="20sp"
-            android:background="@drawable/back_rect"/>
+            android:textSize="15sp"
+            />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fmmText"
-            android:text="0.00"
+            android:text="FMax:0.00"
+            android:textColor="@color/black"
             android:gravity="center"
             android:padding="4dp"
             android:layout_gravity="center"
             android:textStyle="bold"
-            android:textSize="20sp"
-            android:background="@drawable/back_rect"/>
+            android:textSize="15sp"
+            />
 
 
     </LinearLayout>

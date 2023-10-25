@@ -9,11 +9,22 @@
     <string name="fmuestre_desc">Valores de frecuencia de muestreo en Hz</string>
     <string name="nombre_paciente">Nombre del paciente</string>
     <string name="nombre_paciente_desc">Cambiar el nombre del paciente</string>
+    <string name="edad_paciente">Edad del paciente</string>
+    <string name="edad_paciente_desc">Cambiar la edad del paciente</string>
+    <string name="sexo_paciente">Sexo del paciente</string>
+    <string name="sexo_paciente_desc">Selecciona el edad del paciente</string>
+    <string name="codigo_paciente">Código del paciente</string>
+    <string name="codigo_paciente_desc">Cambiar el código del paciente</string>
 
     <string-array name="fm_list">
         <item>11025</item>
         <item>22050</item>
         <item>44100</item>
+    </string-array>
+
+    <string-array name="sexo_list">
+        <item>Masculino</item>
+        <item>Femenino</item>
     </string-array>
 
     <string name="ventana">Tamaño de ventana</string>

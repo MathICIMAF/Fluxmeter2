@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -69,10 +70,10 @@ public class MainActivity extends AppCompatActivity {
     LineData lineData;
     LineDataSet lineDataSet;
 
+    RadioButton espectroRadio,fmediaRadio,fmaxRadio;
+
     private SeekBar seekBar;
     private TextView umbralText,fmText,fftText,ipText,fMaxText,fmmText;
-
-    private CheckBox showFreqMCheck,showFreqMaxCheck;
 
     SharedPreferences sharedPreferences;
 
@@ -96,9 +97,10 @@ public class MainActivity extends AppCompatActivity {
         fmmText = findViewById(R.id.fmmText);
         fftText = findViewById(R.id.fftText);
         ipText = findViewById(R.id.ipText);
-        showFreqMCheck = findViewById(R.id.fmediaCheck);
-        showFreqMaxCheck = findViewById(R.id.fmaxCheck);
         lineChart = findViewById(R.id.lineChart);
+        espectroRadio = findViewById(R.id.radio_spectrograma);
+        fmediaRadio = findViewById(R.id.radio_fmedia);
+        fmaxRadio = findViewById(R.id.radio_fmax);
 
 
     }
@@ -181,41 +183,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        showFreqMCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        espectroRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b){
-                    frequencyView.setVisibility(View.GONE);
-                    lineChart.setVisibility(View.VISIBLE);
-                    seekBar.setProgress(30);
-                    showFreqMaxCheck.setChecked(false);
-                }
-                else
-                {
                     frequencyView.setVisibility(View.VISIBLE);
                     lineChart.setVisibility(View.GONE);
-                    seekBar.setProgress(30);
                 }
             }
         });
 
-        showFreqMaxCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        fmediaRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
-                    //frequencyView.setVisibility(View.GONE);
-                    //lineChart.setVisibility(View.VISIBLE);
-                    //seekBar.setProgress(30);
-                    showFreqMCheck.setChecked(false);
-                }
-                else
-                {
-                    //frequencyView.setVisibility(View.VISIBLE);
-                    //lineChart.setVisibility(View.GONE);
-                    //seekBar.setProgress(30);
+                if (b) {
+                    frequencyView.setVisibility(View.GONE);
+                    lineChart.setVisibility(View.VISIBLE);
                 }
             }
         });
+
+        fmaxRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    frequencyView.setVisibility(View.GONE);
+                    lineChart.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
 
     }
 
@@ -329,9 +326,12 @@ public class MainActivity extends AppCompatActivity {
 
     void process(){
         FrequencyScanner frequencyScanner = new FrequencyScanner();
-        if (showFreqMCheck.isChecked()){
+        if (fmediaRadio.isChecked() || fmaxRadio.isChecked()){
             countIP++;
-            double freqM = (senhalPrueba)?frequencyScanner.extractFreqMean(fftBufferDouble):frequencyScanner.extractFreqMax(fftBuffer,seekBar.getProgress()/100.0f);
+            double freqM = (senhalPrueba)?frequencyScanner.extractFreqMean(fftBufferDouble)
+                    :(fmediaRadio.isChecked() )?
+                    frequencyScanner.extractFreqMean(fftBuffer,seekBar.getProgress()/100.0f):
+                    frequencyScanner.extractFreqMax(fftBuffer,seekBar.getProgress()/100.0f);
             if (fmMax < freqM) fmMax = freqM;
             if (fmMin > freqM) fmMin = freqM;
             //
@@ -343,9 +343,12 @@ public class MainActivity extends AppCompatActivity {
                     ip = (float) ((fmMax-fmMin)/med);
                 }
                 else {
-                    ip = (float) ((fmMax - fmMin) / med) ;
-                    fmMax*=((frecuencySampling/windowSize)/2);
-                    med*=((frecuencySampling/windowSize)/2);
+                    fmMax *= ((frecuencySampling / windowSize) / 2);
+                    med *= ((frecuencySampling / windowSize) / 2);
+                    if (fmMax <= 1000)ip = 0;
+                    else {
+                        ip = (float) ((fmMax - fmMin) / med);
+                    }
                 }
                 if (ipList.size() == 5){
                     ipList.remove(0);
@@ -359,8 +362,8 @@ public class MainActivity extends AppCompatActivity {
                     ipList.add(ip);
                 }
                 String s = String.format("%.2f", ip);
-                String fmax = ("FMax:"+String.format("%.2f", fmMax));
-                String fmed = ("FMed:"+String.format("%.2f", med));
+                String fmax = ("FMax:"+String.format("%.0f", fmMax));
+                String fmed = ("FMed:"+String.format("%.0f", med));
                 countIP = 0;
                 sumFm = 0;
                 fmMin = Double.MAX_VALUE;

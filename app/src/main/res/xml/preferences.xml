@@ -29,6 +29,30 @@
             android:inputType="text"
             android:singleLine="true"
             android:title="@string/nombre_paciente"/>
+        <EditTextPreference
+            android:key="edad_paciente"
+            android:dialogTitle="@string/edad_paciente"
+            android:summary="@string/edad_paciente_desc"
+            android:inputType="number"
+            android:singleLine="true"
+            android:title="@string/edad_paciente"/>
+        <ListPreference
+            android:defaultValue="256"
+            android:dialogTitle="@string/sexo_paciente"
+            android:entries="@array/sexo_list"
+            android:entryValues="@array/sexo_list"
+            android:key="sexo_paciente"
+            android:summary="@string/sexo_paciente_desc"
+            android:title="@string/sexo_paciente" />
+
+        <EditTextPreference
+            android:key="codigo_paciente"
+            android:dialogTitle="@string/codigo_paciente"
+            android:summary="@string/codigo_paciente_desc"
+            android:inputType="text"
+            android:singleLine="true"
+            android:title="@string/codigo_paciente"/>
+
 
 
 
