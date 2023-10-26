@@ -189,6 +189,9 @@ public class MainActivity extends AppCompatActivity {
                 if (b){
                     frequencyView.setVisibility(View.VISIBLE);
                     lineChart.setVisibility(View.GONE);
+                    fmmText.setVisibility(View.GONE);
+                    ipText.setVisibility(View.GONE);
+                    fMaxText.setVisibility(View.GONE);
                 }
             }
         });
@@ -199,6 +202,9 @@ public class MainActivity extends AppCompatActivity {
                 if (b) {
                     frequencyView.setVisibility(View.GONE);
                     lineChart.setVisibility(View.VISIBLE);
+                    fmmText.setVisibility(View.VISIBLE);
+                    ipText.setVisibility(View.VISIBLE);
+                    fMaxText.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -209,6 +215,9 @@ public class MainActivity extends AppCompatActivity {
                 if (b) {
                     frequencyView.setVisibility(View.GONE);
                     lineChart.setVisibility(View.VISIBLE);
+                    fmmText.setVisibility(View.VISIBLE);
+                    ipText.setVisibility(View.VISIBLE);
+                    fMaxText.setVisibility(View.VISIBLE);
                 }
             }
         });

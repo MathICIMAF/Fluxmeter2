@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:text="Umbral: 0.3"
+            android:text="Umbral: 0.2"
             android:id="@+id/umbral_text">
 
         </TextView>
@@ -92,7 +92,8 @@
             android:text="IP: 0.0"
             android:gravity="center"
             android:padding="4dp"
-            android:textColor="@color/black"
+            style="@style/TextViewIp"
+            android:visibility="gone"
             android:layout_gravity="center"
             android:textStyle="bold"
             android:textSize="15sp"
@@ -103,7 +104,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/fMaxText"
             android:text="FMed:0.00"
-            android:textColor="@color/black"
+            style="@style/TextViewIp"
+            android:visibility="gone"
             android:gravity="center"
             android:padding="4dp"
             android:layout_gravity="center"
@@ -115,7 +117,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/fmmText"
             android:text="FMax:0.00"
-            android:textColor="@color/black"
+            android:visibility="gone"
+            style="@style/TextViewIp"
             android:gravity="center"
             android:padding="4dp"
             android:layout_gravity="center"
