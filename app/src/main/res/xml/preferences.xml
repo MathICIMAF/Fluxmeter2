@@ -18,6 +18,33 @@
             android:summary="@string/ventana_desc"
             android:title="@string/ventana" />
 
+        <ListPreference
+            android:defaultValue="@string/frecMedias"
+            android:dialogTitle="@string/grafica"
+            android:entries="@array/grafico_list"
+            android:entryValues="@array/grafico_list"
+            android:key="grafica"
+            android:summary="@string/grafica_desc"
+            android:title="@string/grafica" />
+
+        <ListPreference
+            android:defaultValue="8"
+            android:dialogTitle="@string/foperacion"
+            android:entries="@array/fop_list"
+            android:entryValues="@array/fop_list"
+            android:key="foperacion"
+            android:summary="@string/foperacion_desc"
+            android:title="@string/foperacion" />
+
+        <ListPreference
+            android:defaultValue="60"
+            android:dialogTitle="@string/angulo"
+            android:entries="@array/angulo_list"
+            android:entryValues="@array/angulo_list"
+            android:key="angulo"
+            android:summary="@string/angulo_desc"
+            android:title="@string/angulo" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/datos_paciente">

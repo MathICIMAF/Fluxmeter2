@@ -43,9 +43,14 @@ public class MainActivity extends AppCompatActivity {
     public static ContinuousRecord recorder;
     public static int windowSize = 256;  // fft Resolution o la N
 
+    private static double c = 154000; //velocidad ultrasonido en la sangre 154000cm/s
+
+    double foperacion;
+    double angulo;
+
     public static float maxMagnitud = 15000;
 
-    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*8;
+    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*5;
 
 
 
@@ -70,7 +75,10 @@ public class MainActivity extends AppCompatActivity {
     LineData lineData;
     LineDataSet lineDataSet;
 
-    RadioButton espectroRadio,fmediaRadio,fmaxRadio;
+    //RadioButton espectroRadio,fmediaRadio,fmaxRadio,vmediaRadio;
+    CheckBox showSpectro;
+
+    TipoGrafica tipoGrafica;
 
     private SeekBar seekBar;
     private TextView umbralText,fmText,fftText,ipText,fMaxText,fmmText;
@@ -98,9 +106,11 @@ public class MainActivity extends AppCompatActivity {
         fftText = findViewById(R.id.fftText);
         ipText = findViewById(R.id.ipText);
         lineChart = findViewById(R.id.lineChart);
-        espectroRadio = findViewById(R.id.radio_spectrograma);
-        fmediaRadio = findViewById(R.id.radio_fmedia);
-        fmaxRadio = findViewById(R.id.radio_fmax);
+        showSpectro = findViewById(R.id.showCheck);
+        //espectroRadio = findViewById(R.id.radio_spectrograma);
+        //fmediaRadio = findViewById(R.id.radio_fmedia);
+        //fmaxRadio = findViewById(R.id.radio_fmax);
+        //vmediaRadio = findViewById(R.id.radio_vmedia);
 
 
     }
@@ -132,6 +142,21 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         frecuencySampling =  Integer.parseInt(sharedPreferences.getString("fmuestreo","11025"));
         windowSize =  Integer.parseInt(sharedPreferences.getString("ventana","256"));
+        int ang_val = Integer.parseInt(sharedPreferences.getString("angulo","60"));
+        if (ang_val == 60)
+            angulo = Math.PI/3;
+        else
+            angulo = Math.PI/4;
+        int fop_val = Integer.parseInt(sharedPreferences.getString("foperacion","8"));
+        foperacion = fop_val*1000000;
+
+        String grafica = sharedPreferences.getString("grafica",getString(R.string.frecMedias));
+        if (grafica.equals(getString(R.string.frecMedias)))
+            tipoGrafica = TipoGrafica.FREQ_MED;
+        else if(grafica.equals(getString(R.string.frecMax)))
+            tipoGrafica = TipoGrafica.FREQ_MAX;
+        else
+            tipoGrafica = TipoGrafica.VELOC_MED;
     }
 
     @Override
@@ -183,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        espectroRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        showSpectro.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b){
@@ -193,6 +218,25 @@ public class MainActivity extends AppCompatActivity {
                     ipText.setVisibility(View.GONE);
                     fMaxText.setVisibility(View.GONE);
                 }
+                else {
+                    frequencyView.setVisibility(View.GONE);
+                    lineChart.setVisibility(View.VISIBLE);
+                    ipText.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        /*espectroRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    frequencyView.setVisibility(View.VISIBLE);
+                    lineChart.setVisibility(View.GONE);
+                    fmmText.setVisibility(View.GONE);
+                    ipText.setVisibility(View.GONE);
+                    fMaxText.setVisibility(View.GONE);
+                }
+
             }
         });
 
@@ -222,6 +266,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        vmediaRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    frequencyView.setVisibility(View.GONE);
+                    lineChart.setVisibility(View.VISIBLE);
+                    fmmText.setVisibility(View.GONE);
+                    ipText.setVisibility(View.VISIBLE);
+                    fMaxText.setVisibility(View.GONE);
+                }
+            }
+        });
+
+         */
 
     }
 
@@ -335,10 +393,10 @@ public class MainActivity extends AppCompatActivity {
 
     void process(){
         FrequencyScanner frequencyScanner = new FrequencyScanner();
-        if (fmediaRadio.isChecked() || fmaxRadio.isChecked()){
+        if (!showSpectro.isChecked()){
             countIP++;
             double freqM = (senhalPrueba)?frequencyScanner.extractFreqMean(fftBufferDouble)
-                    :(fmediaRadio.isChecked() )?
+                    :(tipoGrafica == TipoGrafica.FREQ_MED || tipoGrafica == TipoGrafica.VELOC_MED)?
                     frequencyScanner.extractFreqMean(fftBuffer,seekBar.getProgress()/100.0f):
                     frequencyScanner.extractFreqMax(fftBuffer,seekBar.getProgress()/100.0f);
             if (fmMax < freqM) fmMax = freqM;
@@ -387,8 +445,15 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
             runOnUiThread(() -> {
-                int fmInt = (int)freqM;
-                addEntry(fmInt*(frecuencySampling/windowSize)/2);
+                double fmInt = freqM;
+                fmInt *= (frecuencySampling / windowSize) / 2;
+                if (tipoGrafica == TipoGrafica.VELOC_MED){
+                    double vmedia = (c/(2*foperacion*Math.cos(angulo)))*fmInt;
+                    addEntry((float) vmedia);
+                }
+                else {
+                    addEntry((float) fmInt);
+                }
             });
         }
         else {
@@ -404,7 +469,6 @@ public class MainActivity extends AppCompatActivity {
     private void addEntry( float y) {
         LineData data = lineChart.getData();
 
-
         if(lineDataSet == null){
             lineDataSet = new LineDataSet(null, "Dynamic data");
             lineDataSet.setHighlightEnabled(false);
@@ -418,8 +482,13 @@ public class MainActivity extends AppCompatActivity {
                 entryToChange.setX(entryToChange.getX() - 1);
             }
         }
-
-        data.addEntry(new Entry( lineDataSet.getEntryCount(),y/1000), 0);
+        if (tipoGrafica == TipoGrafica.VELOC_MED) {
+            data.addEntry(new Entry(lineDataSet.getEntryCount(), y), 0);
+        }
+        else {
+            data.addEntry(new Entry(lineDataSet.getEntryCount(), y / 1000), 0);
+            lineChart.setVisibleYRange(0,5, YAxis.AxisDependency.RIGHT);
+        }
 
         lineChart.notifyDataSetChanged();
         lineChart.invalidate();

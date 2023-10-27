@@ -54,7 +54,7 @@ public class FrequencyView extends View {
     float factor = 4.0f;
 
 
-    float umbral = 0.3f;
+    float umbral = 0.2f;
 
     private float scale = 1.2f;
 
