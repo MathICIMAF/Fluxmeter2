@@ -9,21 +9,41 @@
     tools:context=".MainActivity">
 
 
-    <com.iimas.fluxmeter2.FrequencyView
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
         android:layout_weight="0.75"
-        android:id="@+id/frequency_view">
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:layout_height="match_parent">
 
-    </com.iimas.fluxmeter2.FrequencyView>
+        <com.iimas.fluxmeter2.FrequencyView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.9"
+            android:id="@+id/frequency_view">
+
+        </com.iimas.fluxmeter2.FrequencyView>
 
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="0.75"
-        android:visibility="gone"
-        android:id="@+id/lineChart"/>
+        <com.github.mikephil.charting.charts.LineChart
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.9"
+            android:visibility="gone"
+            android:id="@+id/lineChart"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:id="@+id/nombreText"
+            style="@style/TextViewIp"
+            android:textSize="20sp"
+            android:text="@string/nombre_paciente"/>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="0dp"
@@ -31,6 +51,7 @@
         android:layout_weight="0.25"
         android:gravity="center"
         android:orientation="vertical">
+
 
         <TextView
             android:layout_width="match_parent"

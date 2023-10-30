@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="General">
         <ListPreference
             android:defaultValue="22050"
@@ -44,6 +45,7 @@
             android:key="angulo"
             android:summary="@string/angulo_desc"
             android:title="@string/angulo" />
+
 
     </PreferenceCategory>
 

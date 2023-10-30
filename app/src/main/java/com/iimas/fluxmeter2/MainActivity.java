@@ -39,18 +39,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static int frecuencySampling = 22050;
     public static ContinuousRecord recorder;
-    public static int windowSize = 256;  // fft Resolution o la N
 
     private static double c = 154000; //velocidad ultrasonido en la sangre 154000cm/s
 
-    double foperacion;
-    double angulo;
 
     public static float maxMagnitud = 15000;
 
-    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*5;
 
 
 
@@ -78,12 +73,24 @@ public class MainActivity extends AppCompatActivity {
     //RadioButton espectroRadio,fmediaRadio,fmaxRadio,vmediaRadio;
     CheckBox showSpectro;
 
-    TipoGrafica tipoGrafica;
-
     private SeekBar seekBar;
-    private TextView umbralText,fmText,fftText,ipText,fMaxText,fmmText;
+    private TextView umbralText,fmText,fftText,ipText,fMaxText,fmmText,nombreText;
 
     SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+
+    //Parametros de configuracion
+    boolean inicio_espectro;
+
+    double foperacion;
+    double angulo;
+
+    TipoGrafica tipoGrafica;
+    public static int windowSize = 256;  // fft Resolution o la N
+    public static int frecuencySampling = 22050;
+
+    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*5;
+    String nombrePaciente;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -107,6 +114,11 @@ public class MainActivity extends AppCompatActivity {
         ipText = findViewById(R.id.ipText);
         lineChart = findViewById(R.id.lineChart);
         showSpectro = findViewById(R.id.showCheck);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPreferences.edit();
+        inicio_espectro = sharedPreferences.getBoolean("pantalla_inicio",true);
+        showSpectro.setChecked(inicio_espectro);
+        nombreText = findViewById(R.id.nombreText);
         //espectroRadio = findViewById(R.id.radio_spectrograma);
         //fmediaRadio = findViewById(R.id.radio_fmedia);
         //fmaxRadio = findViewById(R.id.radio_fmax);
@@ -139,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void loadPreferences(){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         frecuencySampling =  Integer.parseInt(sharedPreferences.getString("fmuestreo","11025"));
         windowSize =  Integer.parseInt(sharedPreferences.getString("ventana","256"));
         int ang_val = Integer.parseInt(sharedPreferences.getString("angulo","60"));
@@ -157,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
             tipoGrafica = TipoGrafica.FREQ_MAX;
         else
             tipoGrafica = TipoGrafica.VELOC_MED;
+        nombrePaciente = sharedPreferences.getString("nombre_paciente","");
     }
 
     @Override
@@ -208,21 +220,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        setPantallaAMostrar(inicio_espectro);
         showSpectro.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
-                    frequencyView.setVisibility(View.VISIBLE);
-                    lineChart.setVisibility(View.GONE);
-                    fmmText.setVisibility(View.GONE);
-                    ipText.setVisibility(View.GONE);
-                    fMaxText.setVisibility(View.GONE);
-                }
-                else {
-                    frequencyView.setVisibility(View.GONE);
-                    lineChart.setVisibility(View.VISIBLE);
-                    ipText.setVisibility(View.VISIBLE);
-                }
+                setPantallaAMostrar(b);
+                editor.putBoolean("pantalla_inicio",b);
+                editor.apply();
             }
         });
 
@@ -280,7 +284,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
          */
+        nombreText.setText(getString(R.string.paciente)+" "+nombrePaciente);
 
+    }
+
+    void setPantallaAMostrar(boolean pantalla_inicio){
+        if (pantalla_inicio){
+            frequencyView.setVisibility(View.VISIBLE);
+            lineChart.setVisibility(View.GONE);
+            fmmText.setVisibility(View.GONE);
+            ipText.setVisibility(View.GONE);
+            fMaxText.setVisibility(View.GONE);
+        }
+        else {
+            frequencyView.setVisibility(View.GONE);
+            lineChart.setVisibility(View.VISIBLE);
+            ipText.setVisibility(View.VISIBLE);
+        }
     }
 
     private void loadEngine() {
@@ -474,6 +494,7 @@ public class MainActivity extends AppCompatActivity {
             lineDataSet.setHighlightEnabled(false);
             data.addDataSet(lineDataSet);
         }
+        setLineDataSetLabel(lineDataSet);
         if(lineDataSet.getEntryCount() >= VISIBLE_NUM) {
             lineDataSet.removeFirst();
 
@@ -500,6 +521,8 @@ public class MainActivity extends AppCompatActivity {
         lineChart.setBackgroundColor(Color.BLACK);
         XAxis xAxis = lineChart.getXAxis();
 
+        lineChart.getLegend().setTextColor(Color.WHITE);
+
         YAxis yAxis = lineChart.getAxisRight();
         yAxis.setTextColor(Color.WHITE);
 
@@ -509,12 +532,26 @@ public class MainActivity extends AppCompatActivity {
             Entry entry = new Entry(i,0);
             entries.add(entry);
         }
-        lineDataSet = new LineDataSet(entries,"Frecuencia Media");
+        lineDataSet = new LineDataSet(entries,"");
         lineDataSet.setColor(Color.WHITE);
         lineDataSet.setLineWidth(2);
         lineDataSet.setDrawCircles(false);
 
         lineData = new LineData(lineDataSet);
         lineChart.setData(lineData);
+    }
+
+    void setLineDataSetLabel(LineDataSet lineDataSet){
+        switch (tipoGrafica){
+            case FREQ_MED:
+                lineDataSet.setLabel(getString(R.string.frecMedias));
+                break;
+            case FREQ_MAX:
+                lineDataSet.setLabel(getString(R.string.frecMax));
+                break;
+            case VELOC_MED:
+                lineDataSet.setLabel(getString(R.string.velocMedias));
+                break;
+        }
     }
 }

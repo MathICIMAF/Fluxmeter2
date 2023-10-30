@@ -2,7 +2,7 @@
     <string name="app_name">Doppler Ultrasound</string>
     <string name="settings">Ajustes</string>
     <string name="about">Acerca de..</string>
-    <string name="about_description">Doppler Ultrasound v0.5</string>
+    <string name="about_description">Doppler Ultrasound v0.6</string>
     <string name="datos_paciente">Datos del paciente</string>
 
     <string name="fmuestreo">Frecuencia de muestreo</string>
@@ -15,6 +15,9 @@
     <string name="angulo">Ángulo de incidencia de haz ultrasónico en grados</string>
     <string name="angulo_desc">Ángulo de inclinación entre el haz ultrasónico y dirección
     del flujo sanguíneo</string>
+
+    <string name="pantalla_inicio">Mostrar espectrograma al iniciar</string>
+    <string name="pantalla_inicio_desc">Mostrar espectrograma al iniciar la aplicación</string>
    
     <string name="nombre_paciente">Nombre del paciente</string>
     <string name="nombre_paciente_desc">Cambiar el nombre del paciente</string>
@@ -24,6 +27,9 @@
     <string name="sexo_paciente_desc">Selecciona el edad del paciente</string>
     <string name="codigo_paciente">Código del paciente</string>
     <string name="codigo_paciente_desc">Cambiar el código del paciente</string>
+
+    <string name="paciente">Paciente:</string>
+
 
     <string-array name="fm_list">
         <item>11025</item>
