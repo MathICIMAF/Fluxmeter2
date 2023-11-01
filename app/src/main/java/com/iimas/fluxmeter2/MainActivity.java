@@ -18,6 +18,7 @@ import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     //Parametros de configuracion
     boolean inicio_espectro;
 
-    double foperacion;
+    double foperacion; //Frecuencia operacion del transductor
     double angulo;
 
     TipoGrafica tipoGrafica;
@@ -186,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     private void initializeViews(){
         loadPreferences();
 
-        fmText.setText("Fm: "+frecuencySampling+ "Hz" );
+        fmText.setText("F. Muestreo: "+frecuencySampling+ "Hz" );
         fftText.setText("Ventana: "+windowSize);
 
         recorder = new ContinuousRecord(frecuencySampling);
@@ -390,8 +391,19 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(i);
         }
+        else if(itemId == R.id.action_manual){
+            userManualDialog();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    void userManualDialog(){
+        Dialog dialog = new Dialog(MainActivity.this);
+        dialog.setContentView(R.layout.user_manual_dialog);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.setCancelable(true);
+        dialog.show();
     }
 
     void showAbout(){

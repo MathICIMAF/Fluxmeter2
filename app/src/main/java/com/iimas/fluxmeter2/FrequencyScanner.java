@@ -2,6 +2,9 @@ package com.iimas.fluxmeter2;
 
 import static com.iimas.fluxmeter2.MainActivity.maxMagnitud;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+
 import org.jtransforms.fft.DoubleFFT_1D;
 
 import java.util.ArrayList;
@@ -189,6 +192,16 @@ public class FrequencyScanner {
         window = new double[size];
         for(int i = 0; i < size; ++i) {
             window[i] = .54 - .46 * Math.cos(2 * Math.PI * i / (size - 1.0));
+        }
+    }
+
+    private void buildHannWindow(int size) {
+        if(window != null && window.length == size) {
+            return;
+        }
+        window = new double[size];
+        for(int i = 0; i < size; ++i) {
+            window[i] = 0.5*(1-cos(2*PI*i/(window.length-1.))) *2;
         }
     }
 

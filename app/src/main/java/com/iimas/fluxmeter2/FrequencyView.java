@@ -77,11 +77,11 @@ public class FrequencyView extends View {
     float minX, minY, maxX, maxY;
     public FrequencyView(Context context) {
         super(context);
-        activity = (Activity) Misc.getAttribute("activity");
+        activity = (Activity) context;//Misc.getAttribute("activity");
     }
     public FrequencyView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        activity = (Activity) Misc.getAttribute("activity");
+        activity = (Activity)context; //Misc.getAttribute("activity");
     }
     
     

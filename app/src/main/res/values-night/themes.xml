@@ -8,4 +8,8 @@
     <style name="TextViewIp">
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="TextViewGray">
+        <item name="android:textColor">#DDDADA</item>
+    </style>
 </resources>

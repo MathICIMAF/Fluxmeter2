@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Doppler Ultrasound</string>
     <string name="settings">Ajustes</string>
     <string name="about">Acerca de..</string>
@@ -7,7 +7,7 @@
 
     <string name="fmuestreo">Frecuencia de muestreo</string>
     <string name="fmuestre_desc">Valores de frecuencia de muestreo en Hz</string>
-    <string name="grafica">Gráfico a mostrar</string>
+    <string name="grafica">·Gráfico a mostrar</string>
     <string name="grafica_desc">Seleccione el gráfico a mostrar</string>
 
     <string name="foperacion">Frecuencia de operación</string>
@@ -70,4 +70,22 @@
     <string name="frecMedias">Frecuencias medias</string>
     <string name="frecMax">Frecuencias máximas</string>
     <string name="velocMedias">Velocidades medias</string>
+
+    <string name="manual_usuario">Manual de Usuario</string>
+    <string name="umbral">·Umbral</string>
+    <string name="umbral_desc">
+        A los elementos vector de frecuencias se le aplica un umbral, que consiste en
+        hacer cero los valores cuya magnitud al ser dividida por la máxima magnitud prefijada sea menor
+        que el umbral. De esta manera se disminuye el ruido.
+    </string>
+    <string name="mostrar_espectro">·Mostrar Espectrograma</string>
+    <string name="mostrar_espectro_desc">Al marcar esta opción se va a mostrar el espectrograma de la señal
+    de audio. En caso contrario se mostrará la opción seleccionada en Ajustes->Gráfico a mostrar</string>
+
+    <string name="indice">·Índide de Pulsatilidad (IP)</string>
+
+    <string name="indic_text">El IP se obtiene al mostrar los gráficos de frecuencias medias, frecuencias máximas o velocidades medias</string>
+
+    <string name="grafico_desc">Aparte del espectrograma, hay opción de otros 3 gráficos de la señal: Frecuencias medias, Frecuencias máximas y Velocidades medias</string>
+
 </resources>

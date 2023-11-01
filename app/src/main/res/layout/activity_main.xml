@@ -49,7 +49,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.25"
-        android:gravity="center"
+
         android:orientation="vertical">
 
 
@@ -58,7 +58,8 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:gravity="center"
-            android:visibility="gone"
+            android:layout_gravity="start"
+            style="@style/TextViewIp"
             android:id="@+id/fmText"/>
 
         <TextView
@@ -66,14 +67,17 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:gravity="center"
-            android:visibility="gone"
+            style="@style/TextViewIp"
             android:id="@+id/fftText"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="15sp"
+            android:layout_marginTop="10dp"
             android:text="Umbral: 0.2"
+            android:gravity="center"
+            style="@style/TextViewIp"
             android:id="@+id/umbral_text">
 
         </TextView>
@@ -91,7 +95,7 @@
            android:layout_height="wrap_content"
            android:checked="true"
            android:id="@+id/showCheck"
-           android:text="Mostrar Espectrograma"/>
+           android:text="@string/mostrar_espectro"/>
 
         <TextView
             android:layout_width="wrap_content"
