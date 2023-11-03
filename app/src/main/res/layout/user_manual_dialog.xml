@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textSize="25sp"
+            style="@style/TextViewIp"
+            android:text="@string/manual_usuario"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:padding="4dp"
+            android:textSize="20sp"
+            style="@style/TextViewIp"
+            android:text="@string/umbral"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:padding="6dp"
+            android:textSize="16sp"
+            style="@style/TextViewGray"
+            android:fontFamily="serif"
+            android:text="@string/umbral_desc"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:padding="6dp"
+            android:textSize="20sp"
+            style="@style/TextViewIp"
+            android:text="@string/mostrar_espectro"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:padding="8dp"
+            android:textSize="16sp"
+            style="@style/TextViewGray"
+            android:fontFamily="serif"
+            android:text="@string/mostrar_espectro_desc"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:padding="6dp"
+            android:textSize="20sp"
+            style="@style/TextViewIp"
+            android:text="@string/indice"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:padding="8dp"
+            android:textSize="16sp"
+            style="@style/TextViewGray"
+            android:fontFamily="serif"
+            android:text="@string/indic_text"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:padding="6dp"
+            android:textSize="20sp"
+            style="@style/TextViewIp"
+            android:text="@string/grafica"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:padding="8dp"
+            android:textSize="16sp"
+            style="@style/TextViewGray"
+            android:fontFamily="serif"
+            android:text="@string/grafico_desc"/>
+
+    </LinearLayout>
+
+</ScrollView>

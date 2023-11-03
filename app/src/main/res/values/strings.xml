@@ -86,6 +86,10 @@
 
     <string name="indic_text">El IP se obtiene al mostrar los gráficos de frecuencias medias, frecuencias máximas o velocidades medias</string>
 
-    <string name="grafico_desc">Aparte del espectrograma, hay opción de otros 3 gráficos de la señal: Frecuencias medias, Frecuencias máximas y Velocidades medias</string>
+    <string name="grafico_desc">Además del espectrograma, hay opción de otros 3 gráficos de la señal: Frecuencias medias, Frecuencias máximas y Velocidades medias. La frecuencia media se calcula a partir del vector resultante
+    de la FFT y luego de aplicar el umbral. La frecuencia máxima se calcula a partir de la frecuencia media sumada al ancho de banda espectral
+    de la señal Doppler. Y la velocidad media se calcula teniendo en cuenta la frecuencia media, la frecuencia de operación del transductor, la velocidad
+    del flujo sanguíneo y el ángulo de inclinación entre el haz ultrasónico y la dirección del flujo sanguíneo.
+    </string>
 
 </resources>
