@@ -4,21 +4,144 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
+    android:weightSum="1"
     tools:context=".MainActivity">
 
-    <com.iimas.fluxmeter2.TimeView
-        android:id="@+id/time_view"
-        android:layout_weight="1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp" />
 
-    <com.iimas.fluxmeter2.FrequencyView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:id="@+id/frequency_view">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="0.75"
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:layout_height="match_parent">
 
-    </com.iimas.fluxmeter2.FrequencyView>
+        <com.iimas.fluxmeter2.FrequencyView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.9"
+            android:id="@+id/frequency_view">
+
+        </com.iimas.fluxmeter2.FrequencyView>
+
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.9"
+            android:visibility="gone"
+            android:id="@+id/lineChart"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"
+            android:gravity="center"
+            android:padding="2dp"
+            android:id="@+id/nombreText"
+            style="@style/TextViewIp"
+            android:textSize="20sp"
+            android:text="@string/nombre_paciente"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.25"
+
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:gravity="center"
+            android:layout_gravity="start"
+            style="@style/TextViewIp"
+            android:id="@+id/fmText"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:gravity="center"
+            style="@style/TextViewIp"
+            android:id="@+id/fftText"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:layout_marginTop="10dp"
+            android:text="Umbral: 0.2"
+            android:gravity="center"
+            style="@style/TextViewIp"
+            android:id="@+id/umbral_text">
+
+        </TextView>
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:max="100"
+            android:progress="20"
+            android:id="@+id/seek_umbral">
+        </SeekBar>
+
+       <CheckBox
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:checked="true"
+           android:id="@+id/showCheck"
+           android:text="@string/mostrar_espectro"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ipText"
+            android:text="IP: 0.0"
+            android:gravity="center"
+            android:padding="4dp"
+            style="@style/TextViewIp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fMaxText"
+            android:text="FMed:0.00"
+            style="@style/TextViewIp"
+            android:visibility="gone"
+            android:gravity="center"
+            android:padding="4dp"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fmmText"
+            android:text="FMax:0.00"
+            android:visibility="gone"
+            style="@style/TextViewIp"
+            android:gravity="center"
+            android:padding="4dp"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            />
+
+
+    </LinearLayout>
+
+
 
 </LinearLayout>

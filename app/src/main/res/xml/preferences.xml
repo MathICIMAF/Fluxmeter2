@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory android:title="General">
+        <ListPreference
+            android:defaultValue="22050"
+            android:dialogTitle="@string/fmuestreo"
+            android:entries="@array/fm_list"
+            android:entryValues="@array/fm_list"
+            android:key="fmuestreo"
+            android:summary="@string/fmuestre_desc"
+            android:title="@string/fmuestreo" />
+        <ListPreference
+            android:defaultValue="256"
+            android:dialogTitle="@string/ventana"
+            android:entries="@array/ventana_list"
+            android:entryValues="@array/ventana_list"
+            android:key="ventana"
+            android:summary="@string/ventana_desc"
+            android:title="@string/ventana" />
+
+        <ListPreference
+            android:defaultValue="@string/frecMedias"
+            android:dialogTitle="@string/grafica"
+            android:entries="@array/grafico_list"
+            android:entryValues="@array/grafico_list"
+            android:key="grafica"
+            android:summary="@string/grafica_desc"
+            android:title="@string/grafica" />
+
+        <ListPreference
+            android:defaultValue="8"
+            android:dialogTitle="@string/foperacion"
+            android:entries="@array/fop_list"
+            android:entryValues="@array/fop_list"
+            android:key="foperacion"
+            android:summary="@string/foperacion_desc"
+            android:title="@string/foperacion" />
+
+        <ListPreference
+            android:defaultValue="60"
+            android:dialogTitle="@string/angulo"
+            android:entries="@array/angulo_list"
+            android:entryValues="@array/angulo_list"
+            android:key="angulo"
+            android:summary="@string/angulo_desc"
+            android:title="@string/angulo" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/datos_paciente">
+
+        <EditTextPreference
+            android:key="nombre_paciente"
+            android:dialogTitle="@string/nombre_paciente"
+            android:summary="@string/nombre_paciente_desc"
+            android:inputType="text"
+            android:singleLine="true"
+            android:title="@string/nombre_paciente"/>
+        <EditTextPreference
+            android:key="edad_paciente"
+            android:dialogTitle="@string/edad_paciente"
+            android:summary="@string/edad_paciente_desc"
+            android:inputType="number"
+            android:singleLine="true"
+            android:title="@string/edad_paciente"/>
+        <ListPreference
+            android:defaultValue="256"
+            android:dialogTitle="@string/sexo_paciente"
+            android:entries="@array/sexo_list"
+            android:entryValues="@array/sexo_list"
+            android:key="sexo_paciente"
+            android:summary="@string/sexo_paciente_desc"
+            android:title="@string/sexo_paciente" />
+
+        <EditTextPreference
+            android:key="codigo_paciente"
+            android:dialogTitle="@string/codigo_paciente"
+            android:summary="@string/codigo_paciente_desc"
+            android:inputType="text"
+            android:singleLine="true"
+            android:title="@string/codigo_paciente"/>
+
+
+
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

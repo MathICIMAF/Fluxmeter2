@@ -87,7 +87,6 @@ public class TimeView extends View {
     public void onDraw(Canvas canvas) {
     	int width = canvas.getWidth();
     	int height = canvas.getHeight();
-    	Activity a = (Activity) Misc.getAttribute("activity");
 	   	boolean nightMode = true;//Misc.getPreference(a, "night_mode", true);
     	
     	// Draw axis

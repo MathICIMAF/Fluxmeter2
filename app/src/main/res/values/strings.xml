@@ -1,3 +1,95 @@
-<resources>
-    <string name="app_name">Fluxmeter2</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Doppler Ultrasound</string>
+    <string name="settings">Ajustes</string>
+    <string name="about">Acerca de..</string>
+    <string name="about_description">Doppler Ultrasound v0.6</string>
+    <string name="datos_paciente">Datos del paciente</string>
+
+    <string name="fmuestreo">Frecuencia de muestreo</string>
+    <string name="fmuestre_desc">Valores de frecuencia de muestreo en Hz</string>
+    <string name="grafica">·Gráfico a mostrar</string>
+    <string name="grafica_desc">Seleccione el gráfico a mostrar</string>
+
+    <string name="foperacion">Frecuencia de operación</string>
+    <string name="foperacion_desc">Frecuencia de operación del transductor en MHz</string>
+    <string name="angulo">Ángulo de incidencia de haz ultrasónico en grados</string>
+    <string name="angulo_desc">Ángulo de inclinación entre el haz ultrasónico y dirección
+    del flujo sanguíneo</string>
+
+    <string name="pantalla_inicio">Mostrar espectrograma al iniciar</string>
+    <string name="pantalla_inicio_desc">Mostrar espectrograma al iniciar la aplicación</string>
+   
+    <string name="nombre_paciente">Nombre del paciente</string>
+    <string name="nombre_paciente_desc">Cambiar el nombre del paciente</string>
+    <string name="edad_paciente">Edad del paciente</string>
+    <string name="edad_paciente_desc">Cambiar la edad del paciente</string>
+    <string name="sexo_paciente">Sexo del paciente</string>
+    <string name="sexo_paciente_desc">Selecciona el edad del paciente</string>
+    <string name="codigo_paciente">Código del paciente</string>
+    <string name="codigo_paciente_desc">Cambiar el código del paciente</string>
+
+    <string name="paciente">Paciente:</string>
+
+
+    <string-array name="fm_list">
+        <item>11025</item>
+        <item>22050</item>
+        <item>44100</item>
+    </string-array>
+
+    <string-array name="sexo_list">
+        <item>Masculino</item>
+        <item>Femenino</item>
+    </string-array>
+
+    <string-array name="fop_list">
+        <item>8</item>
+        <item>20</item>
+    </string-array>
+
+    <string-array name="angulo_list">
+        <item>45</item>
+        <item>60</item>
+    </string-array>
+
+    <string name="ventana">Tamaño de ventana</string>
+    <string name="ventana_desc">Tamaño de ventana de la FFT</string>
+
+    <string-array name="ventana_list">
+        <item>256</item>
+        <item>512</item>
+        <item>1024</item>
+    </string-array>
+
+    <string-array name="grafico_list">
+        <item>@string/frecMedias</item>
+        <item>@string/frecMax</item>
+        <item>@string/velocMedias</item>
+    </string-array>
+
+    <string name="frecMedias">Frecuencias medias</string>
+    <string name="frecMax">Frecuencias máximas</string>
+    <string name="velocMedias">Velocidades medias</string>
+
+    <string name="manual_usuario">Manual de Usuario</string>
+    <string name="umbral">·Umbral</string>
+    <string name="umbral_desc">
+        A los elementos vector de frecuencias se le aplica un umbral, que consiste en
+        hacer cero los valores cuya magnitud al ser dividida por la máxima magnitud prefijada sea menor
+        que el umbral. De esta manera se disminuye el ruido.
+    </string>
+    <string name="mostrar_espectro">·Mostrar Espectrograma</string>
+    <string name="mostrar_espectro_desc">Al marcar esta opción se va a mostrar el espectrograma de la señal
+    de audio. En caso contrario se mostrará la opción seleccionada en Ajustes->Gráfico a mostrar</string>
+
+    <string name="indice">·Índide de Pulsatilidad (IP)</string>
+
+    <string name="indic_text">El IP se obtiene al mostrar los gráficos de frecuencias medias, frecuencias máximas o velocidades medias</string>
+
+    <string name="grafico_desc">Además del espectrograma, hay opción de otros 3 gráficos de la señal: Frecuencias medias, Frecuencias máximas y Velocidades medias. La frecuencia media se calcula a partir del vector resultante
+    de la FFT y luego de aplicar el umbral. La frecuencia máxima se calcula a partir de la frecuencia media sumada al ancho de banda espectral
+    de la señal Doppler. Y la velocidad media se calcula teniendo en cuenta la frecuencia media, la frecuencia de operación del transductor, la velocidad
+    del flujo sanguíneo y el ángulo de inclinación entre el haz ultrasónico y la dirección del flujo sanguíneo.
+    </string>
+
 </resources>

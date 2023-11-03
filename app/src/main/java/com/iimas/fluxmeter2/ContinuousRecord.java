@@ -46,32 +46,23 @@ public class ContinuousRecord {
 		return recordLength;
 	}
 	
-	/**
-	 * Initiate the recording service
-	 * The service is then ready to start recording
-	 * The buffer size can be forced to be multiple of @param multiple (size in sample count)
-	 * @param multiple is ineffective if set to 1
-	 */
+
 	public void prepare(int multiple) {
-		
-		// Setup buffer size
+
 		int BYTES_PER_SHORT = 2;
 	    recordLength = AudioRecord.getMinBufferSize(samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)/BYTES_PER_SHORT;
 	    
 	    // Increase buffer size so that it is a multiple of the param
 	    int r = recordLength % multiple;
 	    if (r>0) recordLength += (multiple-r);
+
 	    
-	    // Log value
-		//Log.d("ContinuousRecord","Buffer size = "+recordLength+" samples");
-	    
+
 	    // Init audio recording from MIC
 	    audioRecord = new AudioRecord(AudioSource.MIC, samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, recordLength*BYTES_PER_SHORT);
 	}
 	
-	/**
-	 *  Listener prototype used in the @method start
-	 */
+
 	public static interface OnBufferReadyListener {
         void onBufferReady(short[] buffer);
     }
@@ -94,15 +85,10 @@ public class ContinuousRecord {
 				   }
 			   });
 	       	thread.start();
-			//Log.d("ContinuousRecord","Service started");
 		}
 	}
 	
-	/**
-	 * Stop recording
-	 * Notifies the thread to stop and wait until it stops
-	 * Also stops the recording service
-	 */
+
 	public void stop() {
 		if (run && audioRecord!=null) {
 			//Log.d("ContinuousRecord","Stopping service...");
@@ -110,14 +96,10 @@ public class ContinuousRecord {
 			while (thread.isAlive())
 				try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); }
 			audioRecord.stop();
-			//Log.d("ContinuousRecord","Service stopped");
 		}
 	}
 	
-	/**
-	 * Destroys the recording service
-	 * @method start and @method stop should then not be called
-	 */
+
 	public void release() {
 		if (!run && audioRecord!=null)
 			audioRecord.release();
