@@ -90,7 +90,9 @@ public class MainActivity extends AppCompatActivity {
     public static int windowSize = 256;  // fft Resolution o la N
     public static int frecuencySampling = 22050;
 
-    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*5;
+    private static int time = 5; //Tiempo en segundos de los datos en pantalla
+
+    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*time;
     String nombrePaciente;
 
     @SuppressLint("MissingInflatedId")
@@ -120,11 +122,6 @@ public class MainActivity extends AppCompatActivity {
         inicio_espectro = sharedPreferences.getBoolean("pantalla_inicio",true);
         showSpectro.setChecked(inicio_espectro);
         nombreText = findViewById(R.id.nombreText);
-        //espectroRadio = findViewById(R.id.radio_spectrograma);
-        //fmediaRadio = findViewById(R.id.radio_fmedia);
-        //fmaxRadio = findViewById(R.id.radio_fmax);
-        //vmediaRadio = findViewById(R.id.radio_vmedia);
-
 
     }
 
@@ -151,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Aqui se cargan las preferencias del menu
     void loadPreferences(){
         frecuencySampling =  Integer.parseInt(sharedPreferences.getString("fmuestreo","11025"));
         windowSize =  Integer.parseInt(sharedPreferences.getString("ventana","256"));
@@ -230,61 +228,6 @@ public class MainActivity extends AppCompatActivity {
                 editor.apply();
             }
         });
-
-        /*espectroRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
-                    frequencyView.setVisibility(View.VISIBLE);
-                    lineChart.setVisibility(View.GONE);
-                    fmmText.setVisibility(View.GONE);
-                    ipText.setVisibility(View.GONE);
-                    fMaxText.setVisibility(View.GONE);
-                }
-
-            }
-        });
-
-        fmediaRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    frequencyView.setVisibility(View.GONE);
-                    lineChart.setVisibility(View.VISIBLE);
-                    fmmText.setVisibility(View.VISIBLE);
-                    ipText.setVisibility(View.VISIBLE);
-                    fMaxText.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        fmaxRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    frequencyView.setVisibility(View.GONE);
-                    lineChart.setVisibility(View.VISIBLE);
-                    fmmText.setVisibility(View.VISIBLE);
-                    ipText.setVisibility(View.VISIBLE);
-                    fMaxText.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        vmediaRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b) {
-                    frequencyView.setVisibility(View.GONE);
-                    lineChart.setVisibility(View.VISIBLE);
-                    fmmText.setVisibility(View.GONE);
-                    ipText.setVisibility(View.VISIBLE);
-                    fMaxText.setVisibility(View.GONE);
-                }
-            }
-        });
-
-         */
         nombreText.setText(getString(R.string.paciente)+" "+nombrePaciente);
 
     }
@@ -304,6 +247,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Se inicializan las vistas
+    //Se prepara para comenzar a recibir el audio
+    //Se reinicia el buffer
     private void loadEngine() {
 
         initializeViews();
@@ -312,10 +258,8 @@ public class MainActivity extends AppCompatActivity {
         recorder.stop();
         recorder.release();
 
-        // Prepare recorder
         recorder.prepare(windowSize); // Record buffer size if forced to be a multiple of the fft resolution
 
-        // Build buffers for runtime
         int n = windowSize;
         fftBuffer = new short[n];
 
@@ -326,10 +270,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Start recording
         startRecording();
-
-
     }
 
+    //Aqui se rellena el buffer a procesar
     private void getTrunks(short[] recordBuffer) {
         int n = windowSize;
 
@@ -367,12 +310,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Aqui se crea el menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
+    //Se le da funcionalidad a los elementos del menu
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
@@ -423,6 +368,8 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    //Esta es la funcion donde se procesa el audio, se llama la FFT y se
+    //mandan a graficar los resultados
     void process(){
         FrequencyScanner frequencyScanner = new FrequencyScanner();
         if (!showSpectro.isChecked()){
@@ -435,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
             if (fmMin > freqM) fmMin = freqM;
             //
             sumFm += freqM;
-            if (countIP == VISIBLE_NUM/4){
+            if (countIP == VISIBLE_NUM/time){
                 double med = sumFm/countIP;
                 float ip;
                 if (senhalPrueba){
@@ -471,8 +418,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         ipText.setText("IP:"+s);
-                        fMaxText.setText(fmax);
-                        fmmText.setText(fmed);
+                        //fMaxText.setText(fmax);
+                        //fmmText.setText(fmed);
                     }
                 });
             }

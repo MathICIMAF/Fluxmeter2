@@ -99,31 +99,6 @@ public class FrequencyScanner {
         return (sum_pi>0.000001)?(sum_i_pi/sum_pi):0.0;
     }
 
-    public double extractFreqMeanReal(short[] sampleData,double umbral){
-        double res = 0;
-        DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
-        double[] a = new double[(sampleData.length + sampleData.length)];
-
-        System.arraycopy(applyWindow(sampleData), 0, a, 0, sampleData.length);
-        fft.realForward(a);
-
-        double sum_pi = 0;
-        double sum_i_pi = 0;
-
-        for(int i = 0; i < a.length / 4; ++i) {
-            double re  = a[2*i];
-            //double im  = a[2*i+1];
-            double mag = re;
-            if (mag/maxMagnitud < umbral)
-                mag = 0;
-            sum_pi+=mag;
-            sum_i_pi+=(i*mag);//
-
-        }
-
-        return (sum_pi>0.000001)?(sum_i_pi/sum_pi):0.0;
-    }
-
     public double extractFreqMax(short[] sampleData,double umbral){
         double res = 0;
         DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
@@ -157,6 +132,41 @@ public class FrequencyScanner {
         return fmedia+bw;
     }
 
+    private void buildHannWindow(int size) {
+        if(window != null && window.length == size) {
+            return;
+        }
+        window = new double[size];
+        for(int i = 0; i < size; ++i) {
+            window[i] = 0.5*(1-cos(2*PI*i/(window.length-1.))) *2;
+        }
+    }
+
+    public double extractFreqMeanReal(short[] sampleData,double umbral){
+        double res = 0;
+        DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
+        double[] a = new double[(sampleData.length + sampleData.length)];
+
+        System.arraycopy(applyWindow(sampleData), 0, a, 0, sampleData.length);
+        fft.realForward(a);
+
+        double sum_pi = 0;
+        double sum_i_pi = 0;
+
+        for(int i = 0; i < a.length / 4; ++i) {
+            double re  = a[2*i];
+            //double im  = a[2*i+1];
+            double mag = re;
+            if (mag/maxMagnitud < umbral)
+                mag = 0;
+            sum_pi+=mag;
+            sum_i_pi+=(i*mag);//
+
+        }
+
+        return (sum_pi>0.000001)?(sum_i_pi/sum_pi):0.0;
+    }
+
     public double extractFreqMean(double[] sampleData){
         double res = 0;
         DoubleFFT_1D fft = new DoubleFFT_1D(sampleData.length + sampleData.length);
@@ -180,11 +190,6 @@ public class FrequencyScanner {
         return sum_i_pi/sum_pi;
     }
 
-
-    /** build a Hamming window filter for samples of a given size
-     * See http://www.labbookpages.co.uk/audio/firWindowing.html#windows
-     * @param size the sample size for which the filter will be created
-     */
     private void buildHammWindow(int size) {
         if(window != null && window.length == size) {
             return;
@@ -195,20 +200,8 @@ public class FrequencyScanner {
         }
     }
 
-    private void buildHannWindow(int size) {
-        if(window != null && window.length == size) {
-            return;
-        }
-        window = new double[size];
-        for(int i = 0; i < size; ++i) {
-            window[i] = 0.5*(1-cos(2*PI*i/(window.length-1.))) *2;
-        }
-    }
 
-    /** apply a Hamming window filter to raw input data
-     * @param input an array containing unfiltered input data
-     * @return a double array containing the filtered data
-     */
+
     private double[] applyWindow(short[] input) {
         double[] res = new double[input.length];
 

@@ -59,11 +59,14 @@ public class ContinuousRecord {
 	    
 
 	    // Init audio recording from MIC
-	    audioRecord = new AudioRecord(AudioSource.MIC, samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, recordLength*BYTES_PER_SHORT);
+	    audioRecord = new AudioRecord(AudioSource.MIC, samplingRate,
+				AudioFormat.CHANNEL_IN_MONO,
+				AudioFormat.ENCODING_PCM_16BIT, recordLength*BYTES_PER_SHORT);
+
 	}
 	
 
-	public static interface OnBufferReadyListener {
+	public interface OnBufferReadyListener {
         void onBufferReady(short[] buffer);
     }
 	
