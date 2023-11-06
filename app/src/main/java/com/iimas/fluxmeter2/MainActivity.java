@@ -70,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
     List<Entry> entries;
     LineData lineData;
     LineDataSet lineDataSet;
-
-    //RadioButton espectroRadio,fmediaRadio,fmaxRadio,vmediaRadio;
     CheckBox showSpectro;
 
     private SeekBar seekBar;
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static int time = 5; //Tiempo en segundos de los datos en pantalla
 
-    private static int VISIBLE_NUM = (frecuencySampling/windowSize)*time;
+    private static int VISIBLE_NUM = (2*frecuencySampling/windowSize)*time;
     String nombrePaciente;
 
     @SuppressLint("MissingInflatedId")
@@ -170,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         nombrePaciente = sharedPreferences.getString("nombre_paciente","");
     }
 
+    //Aca se pide al usuario que otorgue el permiso para grabar audio
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -181,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 
     private void initializeViews(){
         loadPreferences();
@@ -343,6 +343,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Metodo para mostrar manual de usuario
     void userManualDialog(){
         Dialog dialog = new Dialog(MainActivity.this);
         dialog.setContentView(R.layout.user_manual_dialog);
@@ -351,6 +352,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    //Metodo para mostrar el about
     void showAbout(){
         PopupDialog.getInstance(this)
                 .setStyle(Styles.STANDARD)
@@ -445,6 +447,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    //Metodo para agregar un nuevo punto al grafico
     private void addEntry( float y) {
         LineData data = lineChart.getData();
 
@@ -475,6 +478,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //Aca se inicializa el grafico
     void initializeChart(){
         lineChart = findViewById(R.id.lineChart);
         lineChart.setBackgroundColor(Color.BLACK);

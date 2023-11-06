@@ -8,17 +8,6 @@ import androidx.preference.PreferenceFragmentCompat;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
-    /*@Override
-    public void onCreate( Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // below line is used to add preference
-        // fragment from our xml folder.
-        addPreferencesFromResource(R.xml.preferences);
-    }
-
-     */
-
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);

@@ -49,8 +49,7 @@ public class ContinuousRecord {
 
 	public void prepare(int multiple) {
 
-		int BYTES_PER_SHORT = 2;
-	    recordLength = AudioRecord.getMinBufferSize(samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)/BYTES_PER_SHORT;
+	    recordLength = AudioRecord.getMinBufferSize(samplingRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
 	    
 	    // Increase buffer size so that it is a multiple of the param
 	    int r = recordLength % multiple;
@@ -61,7 +60,7 @@ public class ContinuousRecord {
 	    // Init audio recording from MIC
 	    audioRecord = new AudioRecord(AudioSource.MIC, samplingRate,
 				AudioFormat.CHANNEL_IN_MONO,
-				AudioFormat.ENCODING_PCM_16BIT, recordLength*BYTES_PER_SHORT);
+				AudioFormat.ENCODING_PCM_16BIT, recordLength);
 
 	}
 	
